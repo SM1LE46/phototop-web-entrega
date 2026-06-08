@@ -1,0 +1,40 @@
+# Dependencias
+**/node_modules
+
+# Builds y cachés
+**/.angular
+**/dist
+backend/public
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Variables de entorno reales
+.env
+**/.env
+
+# Archivos comprimidos
+*.zip
+*.rar
+*.7z
+
+# Logs
+*.log
+npm-debug.log*
+
+# Archivos temporales / pruebas sueltas
+foto_*.jpg
+foto_*.jpeg
+foto_*.png
+mi_foto.png
+
+# Uploads reales: se entregan en la carpeta backend/uploads
+# y se montan por volumen en docker-compose.yml
+backend/uploads/*
+!backend/uploads/.gitkeep
+!backend/uploads/avatars/
+!backend/uploads/avatars/.gitkeep
+!backend/uploads/posts/
+!backend/uploads/posts/.gitkeep

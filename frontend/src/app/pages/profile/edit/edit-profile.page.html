@@ -1,0 +1,126 @@
+<section class="edit-profile-page">
+  <div class="container py-4">
+
+    <div class="edit-card">
+
+      <h1>Editar perfil</h1>
+
+      <form (ngSubmit)="save()" *ngIf="!loading">
+
+        <div class="form-group">
+          <label>Nombre</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="form.name"
+            name="name"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Apellidos</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="form.surname"
+            name="surname"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label>Descripción</label>
+          <textarea
+            class="form-control"
+            rows="4"
+            [(ngModel)]="form.description"
+            name="description"
+          ></textarea>
+        </div>
+        
+        <div class="form-group">
+            <label>Provincia</label>
+            <select
+                class="form-control"
+                [(ngModel)]="form.province_id"
+                name="province_id"
+            >
+                <option [ngValue]="null">Selecciona una provincia</option>
+
+                <option
+                *ngFor="let province of provinces"
+                [ngValue]="province.id"
+                >
+                {{ province.name }}
+                </option>
+            </select>
+        </div>
+
+        <div class="roles-section">
+
+          <label class="role-checkbox">
+            <input
+              type="checkbox"
+              [(ngModel)]="form.photographer"
+              name="photographer"
+              (change)="onPhotographerChange()"
+            />
+            Soy fotógrafo
+          </label>
+
+          <label class="role-checkbox">
+            <input
+              type="checkbox"
+              [(ngModel)]="form.model"
+              name="model"
+            />
+            Soy modelo
+          </label>
+
+        </div>
+
+        <div class="form-group" *ngIf="form.photographer">
+          <label class="form-label d-block">Categorías de fotografía</label>
+
+          <div class="categories-select-grid" *ngIf="allCategories.length > 0">
+            <button
+              type="button"
+              class="category-chip"
+              *ngFor="let category of allCategories"
+              [class.selected]="isCategorySelected(category.id)"
+              (click)="toggleCategory(category.id)"
+            >
+              {{ category.name }}
+            </button>
+          </div>
+        
+          <div class="field-hint mt-2">
+            Selecciona una o varias categorías en las que trabajas.
+          </div>
+        </div>
+        <div class="actions">
+
+          <button
+            type="submit"
+            class="btn btn-primary-custom"
+            [disabled]="saving"
+          >
+            Guardar cambios
+          </button>
+
+          <a
+            routerLink="/profile"
+            class="btn btn-secondary-custom"
+          >
+            Cancelar
+          </a>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+</section>

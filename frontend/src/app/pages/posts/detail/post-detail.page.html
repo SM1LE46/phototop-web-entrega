@@ -1,0 +1,261 @@
+<section class="post-detail-page">
+  <div class="container py-4">
+    <div class="post-detail-card" *ngIf="!loading && post">
+      <div class="post-detail-top">
+        <div class="post-detail-author" (click)="goToAuthorProfile()">
+          <div class="post-detail-author-avatar">
+            <ng-container *ngIf="hasProfileImage(post.user_profile_image); else initialTpl">
+              <img [src]="getProfileImage(post.user_profile_image)" [alt]="post.user_name + ' ' + post.user_surname" />
+            </ng-container>
+
+            <ng-template #initialTpl>
+              <div class="post-detail-author-initial">
+                {{ getInitial(post.user_name) }}
+              </div>
+            </ng-template>
+          </div>
+          <span class="author-name">{{ post.user_name }} {{ post.user_surname }}</span>
+        </div>
+
+        <div class="post-detail-actions" (click)="stopEvent($event)">
+          <button *ngIf="!isOwner" class="btn btn-primary-custom btn-sm" type="button" (click)="messageAuthor()">
+            Mensaje
+          </button>
+
+          <div class="comment-card__menu-wrapper" *ngIf="isLoggedIn">
+            <button type="button" class="btn-icon-custom comment-card__menu-trigger" aria-label="Más opciones"
+              (click)="togglePostActionsMenu($event)">
+              ⋯
+            </button>
+
+            <div class="comment-card__menu" *ngIf="showPostActionsMenu">
+              <button *ngIf="!isOwner" type="button" class="comment-card__menu-item" (click)="openPostReportModal()">
+                Reportar publicación
+              </button>
+
+              <button *ngIf="isOwner" type="button" class="comment-card__menu-item" [disabled]="deleting"
+                (click)="openPostDeleteAction()">
+                {{ deleting ? 'Eliminando...' : 'Eliminar publicación' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-detail-gallery">
+        <div class="post-detail-main-image-wrap">
+          <img *ngIf="currentPhotoUrl" [src]="currentPhotoUrl" [alt]="post.title" class="post-detail-main-image" />
+
+          <button type="button" class="gallery-nav gallery-nav-left" *ngIf="post.photos?.length > 1"
+            (click)="prevPhoto()">
+            ‹
+          </button>
+
+          <button type="button" class="gallery-nav gallery-nav-right" *ngIf="post.photos?.length > 1"
+            (click)="nextPhoto()">
+            ›
+          </button>
+        </div>
+
+        <div class="post-detail-thumbs" *ngIf="post.photos?.length > 1">
+          <button type="button" class="post-detail-thumb" *ngFor="let photo of post.photos; let i = index"
+            [class.active]="i === currentPhotoIndex" (click)="goToPhoto(i)">
+            <img
+              [src]="photo.file_path.startsWith('http') ? photo.file_path : 'http://localhost:3000' + photo.file_path"
+              [alt]="post.title + ' ' + (i + 1)" />
+          </button>
+        </div>
+      </div>
+
+      <div class="post-detail-info">
+        <div class="post-title-row">
+          <h1>{{ post.title }}</h1>
+
+          <div class="post-rating-summary"
+            [class.post-rating-summary--empty]="getPostRatingLabel(post.avg_rating) === 'Sin votos'">
+            <ng-container *ngIf="getPostRatingLabel(post.avg_rating) !== 'Sin votos'; else noVotesTpl">
+              <span class="rating-star">★</span>
+              <span class="rating-value">{{ getPostRatingLabel(post.avg_rating) }}</span>
+              <span class="rating-separator">·</span>
+              <span class="rating-count">
+                {{ getPostRatingsCountLabel(post.ratings_count) }}
+              </span>
+            </ng-container>
+
+            <ng-template #noVotesTpl>
+              <span class="rating-star">★</span>
+              <span class="rating-count">Sin votos</span>
+            </ng-template>
+          </div>
+        </div>
+
+        <div class="post-meta-row">
+          <p class="post-meta" *ngIf="post.category_name">
+            <svg class="svg_icon_primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+              <path
+                d="M96.5 160L96.5 309.5C96.5 326.5 103.2 342.8 115.2 354.8L307.2 546.8C332.2 571.8 372.7 571.8 397.7 546.8L547.2 397.3C572.2 372.3 572.2 331.8 547.2 306.8L355.2 114.8C343.2 102.7 327 96 310 96L160.5 96C125.2 96 96.5 124.7 96.5 160zM208.5 176C226.2 176 240.5 190.3 240.5 208C240.5 225.7 226.2 240 208.5 240C190.8 240 176.5 225.7 176.5 208C176.5 190.3 190.8 176 208.5 176z" />
+            </svg>
+            {{ post.category_name }}
+          </p>
+        </div>
+
+        <p class="post-description">
+          {{ post.description || 'Sin descripción.' }}
+        </p>
+
+        <div class="post-rating-box" *ngIf="canRatePost">
+          <div class="post-rating-box__content">
+            <div>
+              <div class="post-rating-box__label">
+                Tu puntuación
+              </div>
+
+              <div class="post-rating-stars">
+                <button type="button" class="star-btn" *ngFor="let star of [1,2,3,4,5]"
+                  [class.active]="star <= (hoverRating || selectedRating)" (mouseenter)="setHoverRating(star)"
+                  (mouseleave)="clearHoverRating()" (click)="selectRating(star)">
+                  ★
+                </button>
+              </div>
+            </div>
+
+            <div class="post-rating-box__actions">
+              <button class="btn btn-primary-custom btn-sm" [disabled]="sendingRating || !selectedRating"
+                (click)="submitRating()">
+                {{ sendingRating ? 'Enviando...' : 'Enviar puntuación' }}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="post-comments">
+        <div class="post-comments-header">
+          <h2>Comentarios</h2>
+        </div>
+
+        <div class="comment-form" *ngIf="isLoggedIn">
+          <textarea class="form-control" rows="3" [(ngModel)]="commentText"
+            placeholder="Escribe un comentario..."></textarea>
+
+          <div class="comment-form__actions">
+            <button class="btn btn-primary-custom" [disabled]="sendingComment || !commentText.trim()"
+              (click)="submitComment()">
+              {{ sendingComment ? 'Enviando...' : 'Comentar' }}
+            </button>
+          </div>
+        </div>
+
+        <div class="comment-card" *ngFor="let comment of post.comments">
+          <div class="comment-card__top">
+            <div class="comment-card__author">
+              <div class="comment-card__avatar">
+                <ng-container *ngIf="hasProfileImage(comment.profile_image); else commentInitialTpl">
+                  <img [src]="getProfileImage(comment.profile_image)" [alt]="comment.name + ' ' + comment.surname" />
+                </ng-container>
+
+                <ng-template #commentInitialTpl>
+                  <div class="comment-card__initial">
+                    {{ getInitial(comment.name) }}
+                  </div>
+                </ng-template>
+              </div>
+
+              <div class="comment-card__author-info">
+                <div class="comment-author">
+                  {{ comment.name }} {{ comment.surname }}
+                </div>
+              </div>
+            </div>
+
+            <div class="comment-card__menu-wrapper" (click)="stopEvent($event)">
+              <button type="button" class="btn-icon-custom" (click)="toggleCommentMenu(comment.id)">
+                ⋯
+              </button>
+
+              <div class="comment-card__menu" *ngIf="openCommentMenuId === comment.id">
+                <button *ngIf="isMyComment(comment)" type="button" class="comment-card__menu-item"
+                  (click)="startEditComment(comment)">
+                  Editar
+                </button>
+
+                <button *ngIf="isMyComment(comment)" type="button" class="comment-card__menu-item"
+                  (click)="removeComment(comment)">
+                  {{ deletingCommentId === comment.id ? 'Borrando...' : 'Borrar' }}
+                </button>
+
+                <button *ngIf="!isMyComment(comment)" type="button"
+                  class="comment-card__menu-item comment-card__menu-item--danger"
+                  (click)="openReportModal('comment', comment.id)">
+                  Denunciar
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="editingCommentId !== comment.id; else editCommentTpl" class="comment-text">
+            {{ comment.comment }}
+          </div>
+
+          <ng-template #editCommentTpl>
+            <div class="comment-edit-form">
+              <textarea class="form-control" rows="3" [(ngModel)]="editingCommentText"></textarea>
+
+              <div class="comment-edit-form__actions">
+                <button class="btn btn-secondary-custom btn-sm" (click)="cancelEditComment()">
+                  Cancelar
+                </button>
+
+                <button class="btn btn-primary-custom btn-sm"
+                  [disabled]="savingEditedComment || !editingCommentText.trim()" (click)="saveEditedComment(comment)">
+                  {{ savingEditedComment ? 'Guardando...' : 'Guardar' }}
+                </button>
+              </div>
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="empty-comments" *ngIf="!post.comments?.length">
+          Todavía no hay comentarios.
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="floating-toast" *ngIf="toastVisible">
+    {{ toastMessage }}
+  </div>
+  <div class="report-modal-backdrop" *ngIf="showReportModal">
+    <div class="report-modal">
+      <div class="report-modal__header">
+        <h3>Enviar reporte</h3>
+        <button type="button" class="report-modal__close" (click)="closeReportModal()">×</button>
+      </div>
+
+      <div class="report-modal__body">
+        <label class="form-label">Motivo</label>
+        <select class="form-select mb-3" [(ngModel)]="reportReason">
+          <option value="">Selecciona un motivo</option>
+          <option value="Spam">Spam</option>
+          <option value="Contenido inapropiado">Contenido inapropiado</option>
+          <option value="Acoso">Acoso</option>
+          <option value="Otro">Otro</option>
+        </select>
+
+        <label class="form-label">Detalles</label>
+        <textarea class="form-control" rows="4" [(ngModel)]="reportDetails"
+          placeholder="Explica brevemente qué ocurre"></textarea>
+      </div>
+
+      <div class="report-modal__footer">
+        <button class="btn btn-secondary-custom" type="button" (click)="closeReportModal()">
+          Cancelar
+        </button>
+
+        <button class="btn btn-primary-custom" type="button"
+          [disabled]="sendingReport || !reportReason.trim() || !reportDetails.trim()" (click)="submitReport()">
+          {{ sendingReport ? 'Enviando...' : 'Enviar reporte' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

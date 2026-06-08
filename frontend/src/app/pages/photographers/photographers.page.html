@@ -1,0 +1,199 @@
+<section class="photographers-page">
+  <div class="container py-4">
+    <section class="photographers-hero mb-4">
+      <p class="hero-kicker">Fotógrafos</p>
+
+      <h1>Encuentra profesionales por estilo y ubicación</h1>
+
+      <p>
+        Busca fotógrafos por nombre, provincia, categoría o valoración y descubre
+        perfiles que encajen con el tipo de sesión que necesitas.
+      </p>
+    </section>
+
+    <div class="filters-card mb-4">
+      <div class="filters-grid">
+        <div class="filter-field filter-field-search">
+          <label class="form-label">Buscar</label>
+          <input
+            type="text"
+            class="form-control"
+            [(ngModel)]="filters.q"
+            placeholder="Nombre o apellidos"
+          />
+        </div>
+
+        <div class="filter-field">
+          <label class="form-label">Provincia</label>
+          <select class="form-select" [(ngModel)]="filters.province_id">
+            <option [ngValue]="null">Todas</option>
+            <option *ngFor="let province of provinces" [ngValue]="province.id">
+              {{ province.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label class="form-label">Categoría</label>
+          <select class="form-select" [(ngModel)]="filters.category_id">
+            <option [ngValue]="null">Todas</option>
+            <option *ngFor="let category of categories" [ngValue]="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-field">
+          <label class="form-label">Valoración</label>
+          <select class="form-select" [(ngModel)]="filters.min_rating">
+            <option [ngValue]="null">Todas</option>
+            <option [ngValue]="4">4 o más</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="filter-actions">
+        <button
+          class="btn btn-secondary-custom"
+          type="button"
+          [disabled]="refreshing"
+          (click)="clearFilters()"
+        >
+          Limpiar filtros
+        </button>
+
+        <button
+          class="btn btn-primary-custom"
+          type="button"
+          [disabled]="refreshing"
+          (click)="applyFilters()"
+        >
+          {{ refreshing ? 'Filtrando...' : 'Filtrar' }}
+        </button>
+      </div>
+    </div>
+
+    <ng-container *ngIf="!loading; else loadingTpl">
+      <div class="results-summary" *ngIf="photographersTotal > 0">
+        {{ photographersTotal }} fotógrafo{{ photographersTotal === 1 ? '' : 's' }} encontrado{{ photographersTotal === 1 ? '' : 's' }}
+      </div>
+
+      <div class="photographers-grid" *ngIf="photographers.length > 0; else emptyTpl">
+        <a
+          class="photographer-card"
+          *ngFor="let photographer of photographers"
+          [routerLink]="['/users', photographer.id]"
+        >
+          <div class="photographer-card__avatar">
+            <ng-container *ngIf="hasProfileImage(photographer.profile_image); else initialAvatarTpl">
+              <img
+                [src]="getProfileImage(photographer.profile_image)"
+                [alt]="photographer.name + ' ' + photographer.surname"
+              />
+            </ng-container>
+
+            <ng-template #initialAvatarTpl>
+              <div class="photographer-card__initial">
+                {{ getInitial(photographer.name) }}
+              </div>
+            </ng-template>
+          </div>
+
+          <div class="photographer-card__body">
+            <div class="photographer-card__top">
+              <div>
+                <div class="photographer-card__name">
+                  {{ photographer.name }} {{ photographer.surname }}
+                </div>
+
+                <div class="photographer-card__province" *ngIf="photographer.province_name">
+                  {{ photographer.province_name }}
+                </div>
+              </div>
+
+              <div
+                class="photographer-card__rating"
+                [class.photographer-card__rating--empty]="getRatingLabel(photographer.avg_rating) === 'Sin votos'"
+              >
+                <ng-container *ngIf="getRatingLabel(photographer.avg_rating) !== 'Sin votos'; else noVotesTpl">
+                  <span class="rating-star">★</span>
+                  <span class="rating-value">{{ getRatingLabel(photographer.avg_rating) }}</span>
+                  <span class="rating-separator">·</span>
+                  <span class="rating-count">
+                    {{ getRatingsCountLabel(photographer.ratings_count) }}
+                  </span>
+                </ng-container>
+
+                <ng-template #noVotesTpl>
+                  <span class="rating-star">★</span>
+                  <span class="rating-count">Sin votos</span>
+                </ng-template>
+              </div>
+            </div>
+
+            <div class="photographer-card__description" *ngIf="photographer.description">
+              {{ photographer.description }}
+            </div>
+
+            <div
+              class="photographer-card__categories"
+              *ngIf="getCategoriesList(photographer.categories).length > 0"
+            >
+              <span
+                class="category-chip"
+                *ngFor="let categoryName of getCategoriesList(photographer.categories)"
+              >
+                <svg
+                  class="svg_icon_primary"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 640 640"
+                >
+                  <path
+                    d="M96.5 160L96.5 309.5C96.5 326.5 103.2 342.8 115.2 354.8L307.2 546.8C332.2 571.8 372.7 571.8 397.7 546.8L547.2 397.3C572.2 372.3 572.2 331.8 547.2 306.8L355.2 114.8C343.2 102.7 327 96 310 96L160.5 96C125.2 96 96.5 124.7 96.5 160zM208.5 176C226.2 176 240.5 190.3 240.5 208C240.5 225.7 226.2 240 208.5 240C190.8 240 176.5 225.7 176.5 208C176.5 190.3 190.8 176 208.5 176z"
+                  />
+                </svg>
+                {{ categoryName }}
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="photographers-pagination" *ngIf="photographersTotalPages > 1">
+        <button
+          type="button"
+          class="btn btn-secondary-custom"
+          (click)="prevPhotographersPage()"
+          [disabled]="photographersPage <= 1 || refreshing"
+        >
+          Anterior
+        </button>
+
+        <span class="photographers-pagination__info">
+          Página {{ photographersPage }} de {{ photographersTotalPages }}
+        </span>
+
+        <button
+          type="button"
+          class="btn btn-primary-custom"
+          (click)="nextPhotographersPage()"
+          [disabled]="photographersPage >= photographersTotalPages || refreshing"
+        >
+          Siguiente
+        </button>
+      </div>
+    </ng-container>
+
+    <ng-template #loadingTpl>
+      <div class="state-card">
+        Cargando fotógrafos...
+      </div>
+    </ng-template>
+
+    <ng-template #emptyTpl>
+      <div class="state-card">
+        No se han encontrado fotógrafos con esos filtros.
+      </div>
+    </ng-template>
+  </div>
+</section>

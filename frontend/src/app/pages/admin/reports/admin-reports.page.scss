@@ -1,0 +1,136 @@
+@use '../../../../styles/variables' as *;
+
+.admin-tabs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.admin-tabs a {
+  text-decoration: none;
+  padding: 0.6rem 1rem;
+  border-radius: 10px;
+  background: $background;
+  color: $text-dark;
+  font-weight: 600;
+  border: 1px solid $border;
+}
+
+.admin-tabs a.active {
+  background: $primary-light;
+  color: white;
+  border-color: $primary-light;
+}
+
+.admin-card {
+  background: $background;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  padding: 1.5rem;
+}
+
+.admin-table th {
+  font-weight: 700;
+  white-space: nowrap;
+  color: $text-dark;
+}
+
+.report-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.65rem;
+  flex-wrap: wrap;
+}
+
+.report-actions .btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.status-badge--open {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.status-badge--reviewing {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.status-badge--closed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.report-reason__title {
+  font-weight: 700;
+  margin-bottom: 0.2rem;
+  color: $text-dark;
+}
+
+.report-reason__details {
+  font-size: 0.9rem;
+  color: $text-light;
+  line-height: 1.35;
+}
+
+.admin-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 3000;
+}
+
+.admin-modal {
+  width: 100%;
+  max-width: 640px;
+  background: $background;
+  border-radius: $radius-lg;
+  box-shadow: 0 20px 60px rgba(15, 23, 42, 0.2);
+  overflow: hidden;
+}
+
+.admin-modal__header,
+.admin-modal__footer {
+  padding: 1rem 1.25rem;
+}
+
+.admin-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid $border;
+}
+
+.admin-modal__body {
+  padding: 1.25rem;
+}
+
+.admin-modal__footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  border-top: 1px solid $border;
+}
+
+.admin-modal__close {
+  background: transparent;
+  border: 0;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+  color: $text-normal;
+}

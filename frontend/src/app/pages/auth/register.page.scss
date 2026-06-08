@@ -1,0 +1,78 @@
+:host {
+  display: block;
+}
+
+.register-steps {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.register-step {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  color: #9ca3af;
+}
+
+.register-step.active {
+  color: #026dcc;
+}
+
+.register-step-number {
+  width: 30px;
+  height: 30px;
+  border-radius: 999px;
+  border: 1px solid #d1d5db;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  background: #ffffff;
+}
+
+.register-step.active .register-step-number {
+  background: #026dcc;
+  border-color: #026dcc;
+  color: #ffffff;
+}
+
+.register-step-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.register-step-line {
+  width: 48px;
+  height: 1px;
+  background: #d1d5db;
+}
+
+.categories-select-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.category-chip {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+  border-radius: 999px;
+  padding: 0.65rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+
+.category-chip:hover {
+  background: #f3f4f6;
+}
+
+.category-chip.selected {
+  background: #026dcc;
+  border-color: #026dcc;
+  color: #ffffff;
+}

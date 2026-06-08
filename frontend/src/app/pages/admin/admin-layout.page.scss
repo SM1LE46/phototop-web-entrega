@@ -1,0 +1,44 @@
+@use '../../../styles/variables' as *;
+
+.admin-page {
+  min-height: 100%;
+}
+
+.admin-header h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.admin-header p {
+  font-size: 1.1rem;
+  color: #6b7280;
+  margin: 0;
+}
+
+.admin-tabs {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.admin-tabs a {
+  text-decoration: none;
+  padding: 0.75rem 1.1rem;
+  border-radius: 999px;
+  border: 1px solid #d7deea;
+  background: #fff;
+  color: #1f2937;
+  font-weight: 600;
+  transition: all 0.18s ease;
+}
+
+.admin-tabs a:hover {
+  background: #f3f6fb;
+}
+
+.admin-tabs a.active {
+  background: #1e88e5;
+  color: #fff;
+  border-color: #1e88e5;
+}

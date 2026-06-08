@@ -1,0 +1,190 @@
+<section class="profile-page">
+  <div class="container py-4">
+    <ng-container *ngIf="!loading && user; else loadingTpl">
+      <div class="profile-card">
+        <div class="profile-header-card">
+          <div class="profile-main">
+            <div class="profile-avatar-wrap">
+              <input #avatarInput type="file" accept="image/png,image/jpeg,image/jpg,image/webp" hidden
+                (change)="onAvatarSelected($event)" />
+
+              <div class="profile-avatar clickable" *ngIf="!profileImageUrl" (click)="avatarInput.click()"
+                title="Cambiar foto">
+                {{ userInitial }}
+              </div>
+
+              <div class="profile-avatar-image-wrapper" *ngIf="profileImageUrl">
+                <img [src]="profileImageUrl" [alt]="fullName" class="profile-avatar-image clickable"
+                  (click)="avatarInput.click()" title="Cambiar foto" />
+
+                <button type="button" class="profile-avatar-remove" (click)="confirmRemoveAvatar($event)"
+                  title="Quitar foto" aria-label="Quitar foto">
+                  ×
+                </button>
+              </div>
+            </div>
+
+            <div class="profile-info">
+              <div class="profile-info-header">
+                <div class="profile-title-row">
+                  <h1 class="profile-name">{{ fullName || 'Usuario' }}</h1>
+
+                  <div class="profile-meta">
+                    <span class="profile-province">
+                      {{ user.province_name || 'Sin provincia' }}
+                    </span>
+
+                    <span class="profile-rating"
+                      [class.profile-rating--empty]="getRatingLabel(user.avg_rating) === 'Sin votos'">
+                      <ng-container *ngIf="getRatingLabel(user.avg_rating) !== 'Sin votos'; else noVotesTpl">
+                        <span class="rating-star">★</span>
+                        <span class="rating-value">{{ getRatingLabel(user.avg_rating) }}</span>
+                        <span class="rating-separator">·</span>
+                        <span class="rating-count">
+                          {{ getRatingsCountLabel(user.ratings_count) }}
+                        </span>
+                      </ng-container>
+
+                      <ng-template #noVotesTpl>
+                        <span class="rating-star">★</span>
+                        <span class="rating-count">Sin votos</span>
+                      </ng-template>
+                    </span>
+                  </div>
+                </div>
+
+                <div class="profile-actions">
+                  <a routerLink="/profile/edit" class="btn btn-secondary-custom">
+                    Editar perfil
+                  </a>
+
+                  <a routerLink="/posts/create" class="btn btn-primary-custom">
+                    Añadir fotos
+                  </a>
+                </div>
+              </div>
+
+              <div class="profile-stats">
+                <button class="profile-stat" type="button" (click)="scrollToPosts()">
+                  <span class="profile-stat-number">{{ stats.posts }}</span>
+                  <span class="profile-stat-label">Publicaciones</span>
+                </button>
+
+                <a class="profile-stat" routerLink="/profile/followers">
+                  <span class="profile-stat-number">{{ stats.followers }}</span>
+                  <span class="profile-stat-label">Seguidores</span>
+                </a>
+
+                <a class="profile-stat" routerLink="/profile/following">
+                  <span class="profile-stat-number">{{ stats.following }}</span>
+                  <span class="profile-stat-label">Seguidos</span>
+                </a>
+              </div>
+
+              <p class="profile-description">
+                {{ user.description || 'Todavía no has añadido una descripción a tu perfil.' }}
+              </p>
+
+              <div class="profile-badges">
+                <span class="profile-badge" *ngIf="user.photographer">Fotógrafo</span>
+                <span class="profile-badge" *ngIf="user.model">Modelo</span>
+                <span class="profile-badge profile-badge-muted" *ngIf="!user.photographer && !user.model">
+                  Usuario
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="profile-posts-card mt-4" id="profile-posts">
+          <div class="profile-categories" *ngIf="user?.photographer && userCategories.length > 0">
+            <div class="profile-categories-list">
+              <span class="profile-category-chip" *ngFor="let category of userCategories">
+                <svg class="svg_icon_primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                  <path
+                    d="M96.5 160L96.5 309.5C96.5 326.5 103.2 342.8 115.2 354.8L307.2 546.8C332.2 571.8 372.7 571.8 397.7 546.8L547.2 397.3C572.2 372.3 572.2 331.8 547.2 306.8L355.2 114.8C343.2 102.7 327 96 310 96L160.5 96C125.2 96 96.5 124.7 96.5 160zM208.5 176C226.2 176 240.5 190.3 240.5 208C240.5 225.7 226.2 240 208.5 240C190.8 240 176.5 225.7 176.5 208C176.5 190.3 190.8 176 208.5 176z" />
+                </svg>
+                {{ category.name }}
+              </span>
+            </div>
+          </div>
+
+          <div class="posts-grid" *ngIf="posts.length > 0; else emptyPostsTpl">
+            <a class="post-card" *ngFor="let post of posts" [routerLink]="['/posts', post.id]">
+              <div class="post-card-image-wrap">
+                <img *ngIf="getPostCoverUrl(post)" [src]="getPostCoverUrl(post)" [alt]="post.title"
+                  class="post-card-image" />
+
+                <div class="post-card-image post-card-image-placeholder" *ngIf="!getPostCoverUrl(post)">
+                  Sin imagen
+                </div>
+
+                <span class="post-card-count" *ngIf="post.photos_count > 1">
+                  {{ post.photos_count }} fotos
+                </span>
+              </div>
+
+              <div class="post-card-body">
+                <h3 class="post-card-title">{{ post.title }}</h3>
+
+                <div class="post-card-footer">
+                  <p class="post-card-category" *ngIf="post.category_name">
+                    <svg class="svg_icon_primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                      <path
+                        d="M96.5 160L96.5 309.5C96.5 326.5 103.2 342.8 115.2 354.8L307.2 546.8C332.2 571.8 372.7 571.8 397.7 546.8L547.2 397.3C572.2 372.3 572.2 331.8 547.2 306.8L355.2 114.8C343.2 102.7 327 96 310 96L160.5 96C125.2 96 96.5 124.7 96.5 160zM208.5 176C226.2 176 240.5 190.3 240.5 208C240.5 225.7 226.2 240 208.5 240C190.8 240 176.5 225.7 176.5 208C176.5 190.3 190.8 176 208.5 176z" />
+                    </svg>
+                    {{ post.category_name }}
+                  </p>
+
+                  <div class="post-card-rating"
+                    [class.post-card-rating--empty]="getRatingLabel(post.avg_rating) === 'Sin votos'">
+                    <ng-container *ngIf="getRatingLabel(post.avg_rating) !== 'Sin votos'; else noVotesPostTpl">
+                      <span class="rating-star">★</span>
+                      <span class="rating-value">{{ getRatingLabel(post.avg_rating) }}</span>
+                      <span class="rating-separator">·</span>
+                      <span class="rating-count">
+                        {{ getRatingsCountLabel(post.ratings_count) }}
+                      </span>
+                    </ng-container>
+
+                    <ng-template #noVotesPostTpl>
+                      <span class="rating-star">★</span>
+                      <span class="rating-count">Sin votos</span>
+                    </ng-template>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+          <div class="posts-pagination" *ngIf="postsTotalPages > 1">
+            <button type="button" class="btn btn-secondary-custom" (click)="prevPostsPage()"
+              [disabled]="postsPage <= 1 || loadingPosts">
+              Anterior
+            </button>
+
+            <span class="posts-pagination__info">
+              Página {{ postsPage }} de {{ postsTotalPages }}
+            </span>
+
+            <button type="button" class="btn btn-primary-custom" (click)="nextPostsPage()"
+              [disabled]="postsPage >= postsTotalPages || loadingPosts">
+              Siguiente
+            </button>
+          </div>
+
+          <ng-template #emptyPostsTpl>
+            <div class="empty-posts">
+              Aquí mostraremos después las fotos y posts del usuario.
+            </div>
+          </ng-template>
+        </div>
+      </div>
+    </ng-container>
+
+    <ng-template #loadingTpl>
+      <div class="profile-loading-card">
+        Cargando perfil...
+      </div>
+    </ng-template>
+  </div>
+</section>

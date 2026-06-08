@@ -1,0 +1,76 @@
+<section class="follows-page">
+    <div class="container py-4">
+        <section class="follows-header">
+            <div>
+                <p class="header-kicker">Perfil</p>
+                <h1>{{ title }}</h1>
+                <p>{{ subtitle }}</p>
+            </div>
+
+            <a [routerLink]="backLink" class="btn btn-secondary-custom">
+                Volver al perfil
+            </a>
+        </section>
+
+        <div class="state-card" *ngIf="loading">
+            Cargando usuarios...
+        </div>
+
+        <div class="users-grid" *ngIf="!loading && users.length > 0">
+            <a class="user-card" *ngFor="let user of users" [routerLink]="getUserLink(user)">
+                <div class="user-avatar">
+                    <ng-container *ngIf="hasProfileImage(user.profile_image); else initialTpl">
+                        <img [src]="getProfileImage(user.profile_image)" [alt]="user.name + ' ' + user.surname" />
+                    </ng-container>
+
+                    <ng-template #initialTpl>
+                        <div class="user-initial">
+                            {{ getInitial(user.name) }}
+                        </div>
+                    </ng-template>
+                </div>
+
+                <div class="user-card-body">
+                    <div class="user-card-top">
+                        <div>
+                            <h2>{{ user.name }} {{ user.surname }}</h2>
+                            <p *ngIf="user.province_name">{{ user.province_name }}</p>
+                        </div>
+
+                        <div class="user-rating"
+                            [class.user-rating--empty]="getRatingLabel(user.avg_rating) === 'Sin votos'">
+                            <ng-container *ngIf="getRatingLabel(user.avg_rating) !== 'Sin votos'; else noVotesTpl">
+                                <span class="rating-star">★</span>
+                                <span class="rating-value">{{ getRatingLabel(user.avg_rating) }}</span>
+                                <span class="rating-separator">·</span>
+                                <span class="rating-count">
+                                    {{ getRatingsCountLabel(user.ratings_count) }}
+                                </span>
+                            </ng-container>
+
+                            <ng-template #noVotesTpl>
+                                <span class="rating-star">★</span>
+                                <span class="rating-count">Sin votos</span>
+                            </ng-template>
+                        </div>
+                    </div>
+
+                    <div class="user-badges">
+                        <span class="user-badge" *ngIf="user.photographer">Fotógrafo</span>
+                        <span class="user-badge" *ngIf="user.model">Modelo</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="state-card" *ngIf="!loading && users.length === 0">
+            <ng-container *ngIf="mode === 'followers'; else followingEmptyTpl">
+                No hay seguidores para mostrar.
+            </ng-container>
+
+            <ng-template #followingEmptyTpl>
+                No hay usuarios seguidos para mostrar.
+            </ng-template>
+        </div>
+    </div>
+</section>

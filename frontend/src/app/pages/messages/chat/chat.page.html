@@ -1,0 +1,73 @@
+<section class="chat-page">
+  <div class="container py-4">
+    <div class="chat-card" *ngIf="!loading; else loadingTpl">
+      <div class="chat-header">
+        <a routerLink="/messages" class="chat-back">←</a>
+
+        <div class="chat-user" *ngIf="otherUser; else conversationTitleTpl">
+          <div class="chat-user-avatar">
+            <ng-container *ngIf="hasProfileImage(otherUser.profile_image); else initialTpl">
+              <img [src]="getProfileImage(otherUser.profile_image)" [alt]="otherUser.name + ' ' + otherUser.surname" />
+            </ng-container>
+
+            <ng-template #initialTpl>
+              <div class="chat-user-initial">
+                {{ getInitial(otherUser.name) }}
+              </div>
+            </ng-template>
+          </div>
+
+          <div>
+            <h1>{{ otherUser.name }} {{ otherUser.surname }}</h1>
+            <p *ngIf="blocked">No puedes enviar mensajes a este usuario.</p>
+          </div>
+        </div>
+
+        <ng-template #conversationTitleTpl>
+          <div>
+            <h1>Conversación</h1>
+            <p *ngIf="blocked">No puedes enviar mensajes a este usuario.</p>
+          </div>
+        </ng-template>
+      </div>
+
+      <div id="chat-messages" class="chat-messages">
+        <div class="message-row" *ngFor="let message of messages" [class.message-row--mine]="isMine(message)">
+          <div class="message-bubble">
+            <div class="message-body">
+              {{ message.body }}
+            </div>
+
+            <div class="message-meta">
+              {{ message.created_at | date:'dd/MM/yyyy HH:mm' }}
+
+              <button type="button" class="message-delete" (click)="deleteMessage(message)">
+                Borrar
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="empty-state" *ngIf="messages.length === 0">
+          Todavía no hay mensajes. Escribe el primero.
+        </div>
+      </div>
+
+      <div class="chat-input">
+        <textarea class="form-control" rows="2" [(ngModel)]="newMessage" [disabled]="blocked || sending"
+          placeholder="Escribe un mensaje..." (keydown.enter)="sendMessage(); $event.preventDefault()"></textarea>
+
+        <button class="btn btn-primary-custom" [disabled]="blocked || sending || !newMessage.trim()"
+          (click)="sendMessage()">
+          {{ sending ? 'Enviando...' : 'Enviar' }}
+        </button>
+      </div>
+    </div>
+
+    <ng-template #loadingTpl>
+      <div class="chat-card empty-state">
+        Cargando conversación...
+      </div>
+    </ng-template>
+  </div>
+</section>

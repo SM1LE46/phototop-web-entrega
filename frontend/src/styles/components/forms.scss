@@ -1,0 +1,16 @@
+.form-label {
+  font-weight: 600;
+  color: #374151;
+}
+
+.auth-input.form-control {
+  border-radius: 0.85rem;
+  border: 1px solid #d1d5db;
+  padding: 0.9rem 1rem;
+  font-size: 0.95rem;
+}
+
+.auth-input.form-control:focus {
+  border-color: #026dcc;
+  box-shadow: 0 0 0 0.2rem rgba(37, 99, 235, 0.15);
+}

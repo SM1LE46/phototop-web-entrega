@@ -1,0 +1,15 @@
+<section class="admin-page">
+  <div class="container py-4">
+    <div class="admin-header mb-4">
+      <h1>Panel de administración</h1>
+      <p>Gestión interna de la plataforma</p>
+    </div>
+
+    <div class="admin-tabs mb-4">
+      <a routerLink="/admin/users" routerLinkActive="active">Usuarios</a>
+      <a routerLink="/admin/reports" routerLinkActive="active">Reportes</a>
+    </div>
+
+    <router-outlet></router-outlet>
+  </div>
+</section>

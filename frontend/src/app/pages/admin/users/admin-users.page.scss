@@ -1,0 +1,140 @@
+@use '../../../../styles/variables' as *;
+
+.admin-card {
+  background: #ffffff;
+  border: 1px solid #e6ebf2;
+  border-radius: 20px;
+  padding: 1.5rem;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.04);
+}
+
+.admin-filters-card .form-label {
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.admin-table th {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.user-name {
+  font-weight: 600;
+}
+
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 0.35rem 0.7rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: #dff6e8;
+  color: #127a43;
+}
+
+.status-badge--deleted {
+  background: #ffe1e1;
+  color: #b42318;
+}
+
+.custom-status-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.custom-status-dropdown__trigger {
+  width: 100%;
+  min-height: 38px;
+  border: 1px solid var(--border-color, #d7deea);
+  border-radius: 10px;
+  background: #fff;
+  padding: 0.55rem 0.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+}
+
+.custom-status-dropdown__trigger:hover {
+  border-color: #b8c7de;
+}
+
+.custom-status-dropdown__trigger.is-open {
+  background: #f3fbf6;
+  border-color: #b7e4c7;
+  color: #166534;
+}
+
+.custom-status-dropdown__trigger.is-reviewing {
+  background: #f3f8ff;
+  border-color: #bfdbfe;
+  color: #1d4ed8;
+}
+
+.custom-status-dropdown__trigger.is-closed {
+  background: #f8f9fb;
+  border-color: #d1d5db;
+  color: #4b5563;
+}
+
+.custom-status-dropdown__arrow {
+  font-size: 0.8rem;
+  line-height: 1;
+  opacity: 0.8;
+}
+
+.custom-status-dropdown__menu {
+  position: absolute;
+  top: calc(100% + 0.35rem);
+  left: 0;
+  width: 100%;
+  background: #fff;
+  border: 1px solid #d7deea;
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+  padding: 0.35rem;
+  z-index: 50;
+}
+
+.custom-status-dropdown__option {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  border-radius: 10px;
+  padding: 0.7rem 0.8rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  text-align: left;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.16s ease;
+}
+
+.custom-status-dropdown__option:hover {
+  background: #f4f7fb;
+}
+
+.custom-status-dropdown__option.is-open {
+  color: #166534;
+}
+
+.custom-status-dropdown__option.is-reviewing {
+  color: #1d4ed8;
+}
+
+.custom-status-dropdown__option.is-closed {
+  color: #4b5563;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: currentColor;
+  flex: 0 0 auto;
+}

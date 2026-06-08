@@ -1,0 +1,176 @@
+<section class="rankings-page">
+  <div class="container py-4">
+    <section class="rankings-hero">
+      <div class="hero-overlay">
+        <div class="hero-content">
+          <p class="hero-kicker">Rankings PhotoTop</p>
+
+          <h1>Descubre los fotógrafos mejor valorados</h1>
+
+          <p>
+            Consulta rankings por periodo, provincia y categoría para encontrar
+            los perfiles mejor puntuados por la comunidad.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="ranking-controls">
+      <div class="period-tabs">
+        <button type="button" [class.active]="filters.period === 'monthly'" (click)="setPeriod('monthly')">
+          Mensual
+        </button>
+
+        <button type="button" [class.active]="filters.period === 'yearly'" (click)="setPeriod('yearly')">
+          Anual
+        </button>
+
+        <button type="button" [class.active]="filters.period === 'global'" (click)="setPeriod('global')">
+          Global
+        </button>
+      </div>
+
+      <div class="filters-card">
+        <div class="filter-group" *ngIf="filters.period !== 'global'">
+          <label>Año</label>
+          <select [(ngModel)]="filters.year">
+            <option *ngFor="let year of years" [ngValue]="year">
+              {{ year }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group" *ngIf="filters.period === 'monthly'">
+          <label>Mes</label>
+          <select [(ngModel)]="filters.month">
+            <option *ngFor="let month of months" [ngValue]="month.value">
+              {{ month.label }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Provincia</label>
+          <select [(ngModel)]="filters.province_id">
+            <option [ngValue]="null">Todas</option>
+            <option *ngFor="let province of provinces" [ngValue]="province.id">
+              {{ province.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Categoría</label>
+          <select [(ngModel)]="filters.category_id">
+            <option [ngValue]="null">Todas</option>
+            <option *ngFor="let category of categories" [ngValue]="category.id">
+              {{ category.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label>Mín. valoraciones</label>
+          <select [(ngModel)]="filters.min_ratings">
+            <option [ngValue]="1">1+</option>
+            <option [ngValue]="2">2+</option>
+            <option [ngValue]="3">3+</option>
+            <option [ngValue]="5">5+</option>
+          </select>
+        </div>
+
+        <div class="filter-actions">
+          <button type="button" class="btn btn-primary-custom" (click)="applyFilters()">
+            Aplicar
+          </button>
+
+          <button type="button" class="btn btn-secondary-custom" (click)="clearFilters()">
+            Limpiar
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="ranking-results">
+      <div class="section-header">
+        <div>
+          <h2>{{ getPeriodTitle() }}</h2>
+          <p>{{ getRankingSubtitle() }}</p>
+        </div>
+      </div>
+
+      <div class="loading-state" *ngIf="loading">
+        Cargando ranking...
+      </div>
+
+      <div class="ranking-list" *ngIf="!loading && rankings.length > 0">
+        <article class="ranking-card" *ngFor="let photographer of rankings">
+          <div class="ranking-position">
+            <img *ngIf="getPositionIcon(photographer.position); else positionText"
+              [src]="getPositionIcon(photographer.position)" [alt]="'Posición ' + photographer.position" />
+            <ng-template #positionText>
+              #{{ photographer.position }}
+            </ng-template>
+          </div>
+
+          <div class="ranking-avatar">
+            <ng-container *ngIf="hasProfileImage(photographer.profile_image); else initialTpl">
+              <img [src]="getProfileImage(photographer.profile_image)"
+                [alt]="photographer.name + ' ' + photographer.surname" />
+            </ng-container>
+
+            <ng-template #initialTpl>
+              <span>{{ getInitial(photographer.name) }}</span>
+            </ng-template>
+          </div>
+
+          <div class="ranking-main">
+            <h3>
+              {{ photographer.name }} {{ photographer.surname }}
+            </h3>
+
+            <p>
+              {{ photographer.province_name || 'Sin provincia' }}
+            </p>
+
+            <div class="ranking-meta">
+              <span>
+                ★ {{ photographer.avg_rating.toFixed(2) }}
+              </span>
+
+              <span>
+                {{ photographer.ratings_count }} valoraciones
+              </span>
+
+              <span>
+                {{ photographer.rated_posts_count }} posts valorados
+              </span>
+            </div>
+          </div>
+
+          <a class="btn btn-primary-custom" [routerLink]="['/users', photographer.id]">
+            Ver perfil
+          </a>
+        </article>
+      </div>
+      <div class="rankings-pagination" *ngIf="!loading && rankingTotalPages > 1">
+        <button type="button" class="btn btn-secondary-custom" (click)="prevRankingPage()"
+          [disabled]="rankingPage <= 1 || loading">
+          Anterior
+        </button>
+
+        <span class="rankings-pagination__info">
+          Página {{ rankingPage }} de {{ rankingTotalPages }}
+        </span>
+
+        <button type="button" class="btn btn-primary-custom" (click)="nextRankingPage()"
+          [disabled]="rankingPage >= rankingTotalPages || loading">
+          Siguiente
+        </button>
+      </div>
+      <div class="empty-state" *ngIf="!loading && rankings.length === 0">
+        No hay suficientes valoraciones para mostrar este ranking.
+      </div>
+    </section>
+  </div>
+</section>

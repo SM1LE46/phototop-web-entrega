@@ -1,0 +1,61 @@
+<section class="conversations-page">
+  <div class="container py-4">
+    <div class="page-header mb-4">
+      <h1>Mensajes</h1>
+    </div>
+
+    <div class="conversations-card" *ngIf="!loading; else loadingTpl">
+      <a
+        class="conversation-item"
+        *ngFor="let conversation of conversations"
+        [routerLink]="['/messages', conversation.other_user.id]"
+      >
+        <div class="conversation-avatar">
+          <ng-container *ngIf="hasProfileImage(conversation.other_user.profile_image); else initialTpl">
+            <img
+              [src]="getProfileImage(conversation.other_user.profile_image)"
+              [alt]="conversation.other_user.name + ' ' + conversation.other_user.surname"
+            />
+          </ng-container>
+
+          <ng-template #initialTpl>
+            <div class="conversation-initial">
+              {{ getInitial(conversation.other_user.name) }}
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="conversation-main">
+          <div class="conversation-top">
+            <div class="conversation-name">
+              {{ conversation.other_user.name }} {{ conversation.other_user.surname }}
+            </div>
+
+            <div class="conversation-date">
+              {{ conversation.last_message.created_at | date:'dd/MM/yyyy HH:mm' }}
+            </div>
+          </div>
+
+          <div class="conversation-preview">
+            <span *ngIf="conversation.last_message.from_me">Tú: </span>
+            {{ conversation.last_message.body }}
+          </div>
+        </div>
+
+        <div class="conversation-badge" *ngIf="conversation.unread_count > 0">
+          {{ conversation.unread_count }}
+        </div>
+      </a>
+
+      <div class="empty-state" *ngIf="conversations.length === 0">
+        Aún no tienes conversaciones.
+      </div>
+    </div>
+
+    <ng-template #loadingTpl>
+      <div class="conversations-card empty-state">
+        Cargando conversaciones...
+      </div>
+    </ng-template>
+  </div>
+</section>

@@ -1,0 +1,117 @@
+@use '../../../../styles/variables' as *;
+
+.page-header h1 {
+  margin: 0 0 0.35rem;
+  color: $text-dark;
+}
+
+.page-header p {
+  margin: 0;
+  color: $text-light;
+}
+
+.conversations-card {
+  background: $background;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+  overflow: hidden;
+}
+
+.conversation-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.15rem;
+  text-decoration: none;
+  color: inherit;
+  border-bottom: 1px solid $border;
+  transition: background 0.16s ease;
+}
+
+.conversation-item:last-child {
+  border-bottom: 0;
+}
+
+.conversation-item:hover {
+  background: #f8fafc;
+}
+
+.conversation-avatar {
+  width: 54px;
+  height: 54px;
+  flex: 0 0 54px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.conversation-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.conversation-initial {
+  width: 100%;
+  height: 100%;
+  background: $primary-light;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+.conversation-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.conversation-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.conversation-name {
+  font-weight: 700;
+  color: $text-dark;
+}
+
+.conversation-date {
+  color: $text-light;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.conversation-preview {
+  color: $text-light;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.conversation-badge {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 0.45rem;
+  border-radius: 999px;
+  background: $primary-light;
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.82rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.empty-state {
+  padding: 2rem;
+  text-align: center;
+  color: $text-light;
+}

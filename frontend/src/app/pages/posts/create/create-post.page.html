@@ -1,0 +1,68 @@
+<section class="create-post-page">
+    <div class="container py-4">
+
+        <h1 class="mb-4">Nueva publicación</h1>
+
+        <div class="card p-4">
+
+            <div class="mb-3">
+                <label class="form-label">Título *</label>
+                <input class="form-control" [(ngModel)]="form.title" placeholder="Título del post" />
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Categoría</label>
+
+                <select class="form-select" [(ngModel)]="form.category_id">
+                    <option [ngValue]="null">Sin categoría</option>
+
+                    <option *ngFor="let category of categories" [ngValue]="category.id">
+                        {{ category.name }}
+                    </option>
+
+                </select>
+
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Descripción</label>
+
+                <textarea class="form-control" rows="4" [(ngModel)]="form.description"
+                    placeholder="Describe la publicación..."></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Fotos *</label>
+
+                <input type="file" class="form-control" multiple accept="image/*" (change)="onFilesSelected($event)" />
+
+                <small class="text-muted">
+                    Puedes subir entre 1 y 10 fotos
+                </small>
+            </div>
+
+            <div class="photo-preview-grid" *ngIf="previews.length > 0">
+
+                <div class="photo-preview" *ngFor="let preview of previews; let i = index">
+
+                    <img [src]="preview">
+
+                    <button type="button" class="remove-photo" (click)="removePhoto(i)">
+                        ✕
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="mt-4">
+
+                <button class="btn btn-primary-custom" (click)="save()" [disabled]="saving">
+                    Crear publicación
+                </button>
+
+            </div>
+
+        </div>
+    </div>
+</section>

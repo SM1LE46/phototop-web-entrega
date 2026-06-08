@@ -1,0 +1,186 @@
+<section class="admin-reports-page">
+  <div class="admin-card admin-filters-card mb-4">
+    <div class="row g-3">
+      <div class="col-12 col-md-4">
+        <label class="form-label">Estado</label>
+        <select class="form-select" [(ngModel)]="filters.status">
+          <option value="">Todos</option>
+          <option value="open">Abiertos</option>
+          <option value="reviewing">En revisión</option>
+          <option value="closed">Cerrados</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <label class="form-label">Tipo</label>
+        <select class="form-select" [(ngModel)]="filters.target_type">
+          <option value="">Todos</option>
+          <option value="user">Usuario</option>
+          <option value="post">Post</option>
+          <option value="message">Mensaje</option>
+        </select>
+      </div>
+
+      <div class="col-12 col-md-4 d-flex align-items-end">
+        <button class="btn btn-primary-custom w-100" (click)="applyFilters()">
+          Filtrar
+        </button>
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <button class="btn btn-secondary-custom" (click)="clearFilters()">
+        Limpiar filtros
+      </button>
+    </div>
+  </div>
+
+  <div class="admin-card" *ngIf="!loading; else loadingTpl">
+    <div class="table-responsive">
+      <table class="table admin-table align-middle mb-0">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Reporta</th>
+            <th>Tipo</th>
+            <th>Objetivo</th>
+            <th>Motivo</th>
+            <th>Estado</th>
+            <th>Fecha</th>
+            <th class="text-end">Acciones</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let report of reports">
+            <td>#{{ report.id }}</td>
+
+            <td>
+              <div class="fw-semibold">
+                {{ report.reporter_name }} {{ report.reporter_surname }}
+              </div>
+              <div class="text-muted small">
+                {{ report.reporter_email }}
+              </div>
+            </td>
+
+            <td>{{ getTargetTypeLabel(report.target_type) }}</td>
+
+            <td>#{{ report.target_id }}</td>
+
+            <td>
+              <div class="report-reason">
+                <div class="report-reason__title">{{ report.reason }}</div>
+                <div class="report-reason__details" *ngIf="report.details">
+                  {{ report.details }}
+                </div>
+              </div>
+            </td>
+
+            <td>
+              <span
+                class="status-badge"
+                [ngClass]="getStatusClass(report.status)"
+              >
+                {{ getStatusLabel(report.status) }}
+              </span>
+            </td>
+
+            <td>{{ report.created_at | date:'dd/MM/yyyy HH:mm' }}</td>
+
+            <td class="text-end">
+              <div class="report-actions">
+                <button
+                  class="btn btn-primary-custom btn-sm"
+                  [disabled]="isClosed(report)"
+                  (click)="openResolveModal(report)"
+                >
+                  {{ isClosed(report) ? 'Resuelto' : 'Resolver' }}
+                </button>
+
+                <button
+                  class="btn btn-secondary-custom btn-sm"
+                  (click)="deleteReport(report)"
+                >
+                  Borrar
+                </button>
+              </div>
+            </td>
+          </tr>
+
+          <tr *ngIf="reports.length === 0">
+            <td colspan="8" class="text-center py-4 text-muted">
+              No hay reportes para mostrar.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <ng-template #loadingTpl>
+    <div class="admin-card text-center py-5">
+      Cargando reportes...
+    </div>
+  </ng-template>
+
+  <div class="admin-modal-backdrop" *ngIf="selectedReport">
+    <div class="admin-modal">
+      <div class="admin-modal__header">
+        <h3>Resolver reporte #{{ selectedReport?.id }}</h3>
+        <button type="button" class="admin-modal__close" (click)="closeResolveModal()">×</button>
+      </div>
+
+      <div class="admin-modal__body" *ngIf="selectedReport">
+        <p class="mb-3">
+          <strong>Tipo:</strong> {{ getTargetTypeLabel(selectedReport.target_type) }}<br>
+          <strong>Objetivo:</strong> #{{ selectedReport.target_id }}<br>
+          <strong>Motivo:</strong> {{ selectedReport.reason }}
+        </p>
+
+        <div class="mb-3">
+          <label class="form-label">Estado</label>
+          <select class="form-select" [(ngModel)]="selectedStatus">
+            <option value="open">Abierto</option>
+            <option value="reviewing">En revisión</option>
+            <option value="closed">Cerrado</option>
+          </select>
+        </div>
+
+        <div class="mb-3" *ngIf="selectedStatus === 'closed'">
+          <label class="form-label">Acción de moderación</label>
+          <select class="form-select" [(ngModel)]="selectedAction">
+            <option value="close_only">Cerrar solo el reporte</option>
+            <option value="hide_target" *ngIf="selectedReport.target_type !== 'user'">Ocultar objetivo</option>
+            <option value="delete_target">Borrar objetivo</option>
+            <option value="deactivate_user" *ngIf="selectedReport.target_type === 'user'">Desactivar usuario</option>
+          </select>
+        </div>
+
+        <div class="mb-3">
+          <label class="form-label">Motivo de moderación</label>
+          <textarea
+            class="form-control"
+            rows="4"
+            [(ngModel)]="adminReason"
+            placeholder="Explica la decisión del administrador"
+          ></textarea>
+        </div>
+      </div>
+
+      <div class="admin-modal__footer">
+        <button class="btn btn-secondary-custom" (click)="closeResolveModal()">
+          Cancelar
+        </button>
+
+        <button
+          class="btn btn-primary-custom"
+          [disabled]="resolving"
+          (click)="submitResolve()"
+        >
+          {{ resolving ? 'Guardando...' : 'Confirmar cambios' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

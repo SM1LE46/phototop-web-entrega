@@ -1,0 +1,247 @@
+<header class="topbar">
+  <div class="topbar-inner container">
+    <div class="left-zone">
+      <div class="mobile-menu-wrapper">
+        <button
+          type="button"
+          class="mobile-menu-button"
+          [class.open]="mobileMenuOpen"
+          (click)="toggleMobileMenu()"
+          aria-label="Abrir o cerrar menú"
+        >
+          <span></span>
+          <span></span>
+          <span></span>
+        </button>
+
+        <div class="mobile-menu-panel" *ngIf="mobileMenuOpen">
+          <nav class="mobile-nav">
+            <a
+              routerLink="/"
+              [class.active]="isRouteActive('/')"
+              (click)="closeMobileMenu()"
+            >
+              Inicio
+            </a>
+
+            <a
+              routerLink="/photographers"
+              [class.active]="isRouteActive('/photographers')"
+              (click)="closeMobileMenu()"
+            >
+              Fotógrafos
+            </a>
+
+            <button
+              type="button"
+              class="mobile-nav-toggle"
+              [class.active]="isCategoriesSectionActive()"
+              (click)="toggleMobileCategories()"
+            >
+              <span>Categorías</span>
+              <span class="caret" [class.rotate]="mobileCategoriesOpen">▼</span>
+            </button>
+
+            <div class="mobile-submenu" [class.open]="mobileCategoriesOpen">
+              <button
+                type="button"
+                class="mobile-category-item"
+                [class.selected]="isAllCategoriesSelected()"
+                (click)="goToAllCategories()"
+              >
+                Todas las categorías
+              </button>
+
+              <button
+                type="button"
+                class="mobile-category-item"
+                *ngFor="let category of categories"
+                [class.selected]="isCategorySelected(category.slug)"
+                (click)="goToCategory(category.slug)"
+              >
+                {{ category.name }}
+              </button>
+            </div>
+
+            <a
+              routerLink="/rankings"
+              [class.active]="isRouteActive('/rankings')"
+              (click)="closeMobileMenu()"
+            >
+              Rankings
+            </a>
+
+            <ng-container *ngIf="!auth.isLoggedIn(); else mobileLoggedMenu">
+              <a
+                routerLink="/auth/login"
+                [class.active]="isRouteActive('/auth/login')"
+                (click)="closeMobileMenu()"
+              >
+                Iniciar sesión
+              </a>
+
+              <a
+                routerLink="/auth/register"
+                [class.active]="isRouteActive('/auth/register')"
+                (click)="closeMobileMenu()"
+              >
+                Registro
+              </a>
+            </ng-container>
+
+            <ng-template #mobileLoggedMenu>
+              <a
+                routerLink="/profile"
+                [class.active]="isRouteActive('/profile')"
+                (click)="closeMobileMenu()"
+              >
+                Mi perfil
+              </a>
+
+              <a
+                routerLink="/profile/edit"
+                [class.active]="isRouteActive('/profile/edit')"
+                (click)="closeMobileMenu()"
+              >
+                Editar perfil
+              </a>
+
+              <a
+                routerLink="/messages"
+                [class.active]="isRouteActive('/messages')"
+                (click)="closeMobileMenu()"
+              >
+                Mensajes
+              </a>
+
+              <button type="button" class="mobile-logout-btn" (click)="logout()">
+                Cerrar sesión
+              </button>
+            </ng-template>
+          </nav>
+        </div>
+      </div>
+
+      <a routerLink="/" class="logo" (click)="closeMobileMenu()">
+        <img src="/phototop-logo.svg" alt="PhotoTop" class="navbar-logo" />
+      </a>
+
+      <nav class="main-nav desktop-nav">
+        <a
+          routerLink="/"
+          routerLinkActive="active"
+          [routerLinkActiveOptions]="{ exact: true }"
+        >
+          Inicio
+        </a>
+
+        <a routerLink="/photographers" routerLinkActive="active">
+          Fotógrafos
+        </a>
+
+        <div class="categories-dropdown">
+          <button
+            type="button"
+            class="categories-button"
+            [class.active]="isCategoriesSectionActive()"
+            (click)="goToAllCategories()"
+          >
+            Categorías
+            <span class="caret">▼</span>
+          </button>
+
+          <div class="categories-menu">
+            <button
+              type="button"
+              class="categories-item"
+              [class.selected]="isAllCategoriesSelected()"
+              (click)="goToAllCategories()"
+            >
+              Todas las categorías
+            </button>
+
+            <button
+              type="button"
+              class="categories-item"
+              *ngFor="let category of categories"
+              [class.selected]="isCategorySelected(category.slug)"
+              (click)="goToCategory(category.slug)"
+            >
+              {{ category.name }}
+            </button>
+          </div>
+        </div>
+
+        <a routerLink="/rankings" routerLinkActive="active">
+          Rankings
+        </a>
+      </nav>
+    </div>
+
+    <div class="right-zone">
+      <ng-container *ngIf="!auth.isLoggedIn(); else loggedMenuDesktop">
+        <div class="desktop-auth-buttons">
+          <a class="btn btn-secondary-custom" routerLink="/auth/login">Iniciar sesión</a>
+          <a class="btn btn-primary-custom" routerLink="/auth/register">Registro</a>
+        </div>
+      </ng-container>
+
+      <ng-template #loggedMenuDesktop>
+        <div class="user-menu">
+          <button
+            type="button"
+            class="user-button"
+            [class.active]="isRouteActive('/profile') || isRouteActive('/messages')"
+            (click)="toggleUserMenu()"
+          >  
+            <span class="user-avatar" *ngIf="!navbarProfileImageUrl">
+              {{ auth.user?.name?.charAt(0) || 'U' }}
+            </span>
+
+            <img
+              *ngIf="navbarProfileImageUrl"
+              [src]="navbarProfileImageUrl"
+              alt="Avatar"
+              class="user-avatar-image"
+            />
+          </button>
+
+          <div class="user-dropdown" *ngIf="userMenuOpen">
+            <a
+              routerLink="/profile"
+              [class.active]="isRouteActive('/profile') && !isRouteActive('/profile/edit')"
+              (click)="closeUserMenu()"
+            >
+              Mi perfil
+            </a>
+
+            <a
+              routerLink="/profile/edit"
+              [class.active]="isRouteActive('/profile/edit')"
+              (click)="closeUserMenu()"
+            >
+              Editar perfil
+            </a>
+
+            <a
+              routerLink="/messages"
+              [class.active]="isRouteActive('/messages')"
+              (click)="closeUserMenu()"
+            >
+              Mensajes
+            </a>
+            <a
+              *ngIf="auth.user?.admin"
+              routerLink="/admin"
+              [class.active]="isRouteActive('/admin')"
+              (click)="closeUserMenu()"
+            >
+              Administración
+            </a>
+            <button type="button" (click)="logout()">Cerrar sesión</button>
+          </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+</header>

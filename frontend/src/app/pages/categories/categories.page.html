@@ -1,0 +1,236 @@
+<section class="categories-page">
+  <div class="container py-4">
+    <section
+      class="categories-hero"
+      [style.background-image]="getHeroBackground()"
+    >
+      <div class="hero-overlay">
+        <div class="hero-content">
+          <p class="hero-kicker">
+            {{ selectedCategory ? selectedCategory.name : 'Categorías' }}
+          </p>
+
+          <h1>
+            {{ selectedCategory ? ('Publicaciones de ' + selectedCategory.name) : 'Explora estilos fotográficos' }}
+          </h1>
+
+          <p>
+            <ng-container *ngIf="selectedCategory; else allCategoriesText">
+              {{ selectedCategory.description }}
+            </ng-container>
+
+            <ng-template #allCategoriesText>
+              Descubre fotógrafos según el tipo de sesión que necesitas:
+              bodas, retratos, moda, naturaleza, deporte y mucho más.
+            </ng-template>
+          </p>
+
+          <div class="hero-actions">
+            <a
+              routerLink="/photographers"
+              [queryParams]="selectedCategory ? { category_ids: selectedCategory.id, type: 'photographer' } : { type: 'photographer' }"
+              class="btn btn-primary-custom"
+            >
+              {{ selectedCategory ? 'Fotógrafos de ' + selectedCategory.name : 'Buscar fotógrafos' }}
+            </a>
+
+            <a
+              *ngIf="selectedCategory"
+              routerLink="/categories"
+              class="btn btn-secondary-custom"
+            >
+              Ver todas las categorías
+            </a>
+
+            <a
+              *ngIf="!selectedCategory"
+              routerLink="/"
+              class="btn btn-secondary-custom"
+            >
+              Ver publicaciones
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="categories-section" *ngIf="!selectedCategory">
+      <div class="section-header">
+        <div>
+          <h2>Todas las categorías</h2>
+          <p>Elige una especialidad para encontrar fotógrafos o publicaciones relacionadas.</p>
+        </div>
+      </div>
+
+      <div class="categories-grid">
+        <article
+          class="category-card"
+          *ngFor="let category of categories"
+        >
+          <div class="category-image">
+            <img
+              [src]="category.image"
+              [alt]="category.name"
+            />
+
+            <div class="category-overlay"></div>
+
+            <span class="category-chip">
+              {{ category.name }}
+            </span>
+          </div>
+
+          <div class="category-content">
+            <h3>{{ category.name }}</h3>
+
+            <p>
+              {{ category.description }}
+            </p>
+
+            <div class="category-actions">
+              <a
+                class="btn btn-primary-custom"
+                routerLink="/photographers"
+                [queryParams]="{ category_ids: category.id, type: 'photographer' }"
+              >
+                Fotógrafos
+              </a>
+
+              <a
+                class="btn btn-secondary-custom"
+                [routerLink]="['/categories', category.slug]"
+              >
+                Posts
+              </a>
+            </div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="category-posts-section" *ngIf="selectedCategory">
+      <div class="section-header">
+        <div>
+          <h2>Últimos posts de {{ selectedCategory.name }}</h2>
+          <p *ngIf="postsTotal > 0">
+            {{ postsTotal }} publicación{{ postsTotal === 1 ? '' : 'es' }} encontrada{{ postsTotal === 1 ? '' : 's' }}.
+          </p>
+        </div>
+      </div>
+
+      <div class="loading-state" *ngIf="loadingPosts">
+        Cargando publicaciones...
+      </div>
+
+      <div class="posts-grid" *ngIf="!loadingPosts && posts.length > 0">
+        <a
+          class="post-card"
+          *ngFor="let post of posts"
+          [routerLink]="['/posts', post.id]"
+        >
+          <div class="post-cover">
+            <ng-container *ngIf="getPostCoverUrl(post); else noPhotoTpl">
+              <img
+                [src]="getPostCoverUrl(post)"
+                [alt]="post.title"
+              />
+            </ng-container>
+
+            <ng-template #noPhotoTpl>
+              <div class="post-cover-empty">
+                Sin imagen
+              </div>
+            </ng-template>
+
+            <div class="photos-count" *ngIf="toNumber(post.photos_count) > 1">
+              {{ post.photos_count }} fotos
+            </div>
+          </div>
+
+          <div class="post-content">
+            <div class="post-author">
+              <div class="author-avatar">
+                <ng-container *ngIf="hasProfileImage(post.profile_image); else initialTpl">
+                  <img
+                    [src]="getProfileImage(post.profile_image)"
+                    [alt]="post.name + ' ' + post.surname"
+                  />
+                </ng-container>
+
+                <ng-template #initialTpl>
+                  <span>{{ getInitial(post.name) }}</span>
+                </ng-template>
+              </div>
+
+              <div>
+                <strong>{{ post.name }} {{ post.surname }}</strong>
+                <small>{{ post.created_at | date:'dd/MM/yyyy' }}</small>
+              </div>
+            </div>
+
+            <h3>{{ post.title }}</h3>
+
+            <p class="post-description">
+              {{ post.description || 'Sin descripción.' }}
+            </p>
+
+            <div class="post-footer">
+              <span class="category-chip-small">
+                {{ post.category_name || selectedCategory.name }}
+              </span>
+
+              <span
+                class="rating-summary"
+                [class.no-votes]="toNumber(post.ratings_count) === 0"
+                title="Valoración media y número de votos"
+              >
+                <ng-container *ngIf="toNumber(post.ratings_count) > 0; else noVotesTpl">
+                  <span class="rating-star">★</span>
+                  <span class="rating-value">{{ toNumber(post.avg_rating).toFixed(1) }}</span>
+                  <span class="rating-separator">·</span>
+                  <span class="rating-votes">
+                    {{ toNumber(post.ratings_count) }}
+                    {{ toNumber(post.ratings_count) === 1 ? 'voto' : 'votos' }}
+                  </span>
+                </ng-container>
+
+                <ng-template #noVotesTpl>
+                  <span class="rating-star">★</span>
+                  <span class="rating-votes">Sin votos</span>
+                </ng-template>
+              </span>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="posts-pagination" *ngIf="!loadingPosts && postsTotalPages > 1">
+        <button
+          type="button"
+          class="btn btn-secondary-custom"
+          (click)="prevPostsPage()"
+          [disabled]="postsPage <= 1 || loadingPosts"
+        >
+          Anterior
+        </button>
+
+        <span class="posts-pagination__info">
+          Página {{ postsPage }} de {{ postsTotalPages }}
+        </span>
+
+        <button
+          type="button"
+          class="btn btn-primary-custom"
+          (click)="nextPostsPage()"
+          [disabled]="postsPage >= postsTotalPages || loadingPosts"
+        >
+          Siguiente
+        </button>
+      </div>
+
+      <div class="empty-state" *ngIf="!loadingPosts && posts.length === 0">
+        Todavía no hay publicaciones en esta categoría.
+      </div>
+    </section>
+  </div>
+</section>

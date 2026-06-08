@@ -1,0 +1,214 @@
+<section class="auth-shell">
+  <div class="container-fluid">
+    <div class="row justify-content-center align-items-center min-vh-auth">
+      <div class="col-12 col-sm-10 col-md-9 col-lg-7 col-xl-6">
+        <div class="auth-card">
+          <div class="auth-head text-center mb-4">
+            <span class="auth-eyebrow">Únete a PhotoTop</span>
+            <h1 class="auth-title">Crear cuenta</h1>
+            <p class="auth-description">
+              Regístrate para descubrir fotógrafos, gestionar tu perfil y contactar con otros usuarios.
+            </p>
+          </div>
+
+          <div class="register-steps mb-4">
+            <div class="register-step" [class.active]="step === 1">
+              <span class="register-step-number">1</span>
+              <span class="register-step-label">Datos del perfil</span>
+            </div>
+
+            <div class="register-step-line"></div>
+
+            <div class="register-step" [class.active]="step === 2">
+              <span class="register-step-number">2</span>
+              <span class="register-step-label">Categorías</span>
+            </div>
+          </div>
+
+          <form novalidate>
+            <ng-container *ngIf="step === 1">
+              <div class="row">
+                <div class="col-12 col-md-6 mb-3">
+                  <label for="name" class="form-label">Nombre</label>
+                  <input
+                    id="name"
+                    name="name"
+                    type="text"
+                    class="form-control auth-input"
+                    [(ngModel)]="name"
+                    placeholder="Tu nombre"
+                  />
+                </div>
+
+                <div class="col-12 col-md-6 mb-3">
+                  <label for="surname" class="form-label">Apellidos</label>
+                  <input
+                    id="surname"
+                    name="surname"
+                    type="text"
+                    class="form-control auth-input"
+                    [(ngModel)]="surname"
+                    placeholder="Tus apellidos"
+                  />
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="email" class="form-label">Correo electrónico</label>
+                <input
+                  id="email"
+                  name="email"
+                  type="email"
+                  class="form-control auth-input"
+                  [(ngModel)]="email"
+                  placeholder="tuemail@ejemplo.com"
+                />
+              </div>
+
+              <div class="mb-3">
+                <label for="province_id" class="form-label">Provincia</label>
+                <select
+                  id="province_id"
+                  name="province_id"
+                  class="form-select auth-input"
+                  [(ngModel)]="province_id"
+                >
+                  <option [ngValue]="null">Selecciona una provincia</option>
+                  <option *ngFor="let province of provinces" [ngValue]="province.id">
+                    {{ province.name }}
+                  </option>
+                </select>
+              </div>
+
+              <div class="mb-3">
+                <label for="description" class="form-label">Descripción del perfil</label>
+                <textarea
+                  id="description"
+                  name="description"
+                  class="form-control auth-input"
+                  rows="4"
+                  [(ngModel)]="description"
+                  placeholder="Cuéntanos un poco sobre ti"
+                ></textarea>
+              </div>
+
+              <div class="mb-3">
+                <label class="form-label d-block">Tipo de perfil</label>
+
+                <div class="form-check mb-2">
+                  <input
+                    id="photographer"
+                    name="photographer"
+                    type="checkbox"
+                    class="form-check-input"
+                    [(ngModel)]="photographer"
+                    (ngModelChange)="onPhotographerChange()"
+                  />
+                  <label for="photographer" class="form-check-label">Soy fotógrafo</label>
+                </div>
+
+                <div class="form-check">
+                  <input
+                    id="model"
+                    name="model"
+                    type="checkbox"
+                    class="form-check-input"
+                    [(ngModel)]="model"
+                  />
+                  <label for="model" class="form-check-label">Soy modelo</label>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label for="password" class="form-label">Contraseña</label>
+                <input
+                  id="password"
+                  name="password"
+                  type="password"
+                  class="form-control auth-input"
+                  [(ngModel)]="password"
+                  placeholder="Mínimo 6 caracteres"
+                />
+                <div class="field-hint mt-1">La contraseña debe tener al menos 6 caracteres.</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
+                <input
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  type="password"
+                  class="form-control auth-input"
+                  [(ngModel)]="confirmPassword"
+                  placeholder="Repite la contraseña"
+                />
+              </div>
+
+              <div class="d-flex justify-content-end mt-4">
+                <button
+                  type="button"
+                  class="btn btn-primary-custom"
+                  [disabled]="loading"
+                  (click)="goNext()"
+                >
+                  {{ photographer ? 'Siguiente' : 'Crear cuenta' }}
+                </button>
+              </div>
+            </ng-container>
+
+            <ng-container *ngIf="step === 2">
+              <div class="mb-3">
+                <label class="form-label d-block">Categorías de fotografía</label>
+
+                <div class="categories-select-grid">
+                  <button
+                    type="button"
+                    class="category-chip"
+                    *ngFor="let category of categories"
+                    [class.selected]="isCategorySelected(category.id)"
+                    (click)="toggleCategory(category.id)"
+                  >
+                    {{ category.name }}
+                  </button>
+                </div>
+
+                <div class="field-hint mt-2">
+                  Selecciona una o varias categorías en las que trabajas.
+                </div>
+              </div>
+
+              <div class="d-flex justify-content-between mt-4">
+                <button
+                  type="button"
+                  class="btn btn-secondary-custom"
+                  (click)="goBack()"
+                  [disabled]="loading"
+                >
+                  Volver
+                </button>
+
+                <button
+                  type="button"
+                  class="btn btn-primary-custom"
+                  (click)="finishRegister()"
+                  [disabled]="loading"
+                >
+                  {{ loading ? 'Creando cuenta...' : 'Crear cuenta' }}
+                </button>
+              </div>
+            </ng-container>
+
+            <div class="server-error mt-3" *ngIf="error">
+              {{ error }}
+            </div>
+          </form>
+
+          <div class="auth-foot mt-4 text-center">
+            <span>¿Ya tienes cuenta?</span>
+            <a routerLink="/auth/login">Iniciar sesión</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

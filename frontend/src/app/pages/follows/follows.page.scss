@@ -1,0 +1,209 @@
+@use '../../../styles/variables' as *;
+
+.follows-page {
+  min-height: calc(100vh - 72px);
+  background: #f8fafc;
+}
+
+.follows-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 1.75rem;
+  border: 1px solid #dbeafe;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 88% 30%, rgba(13, 110, 253, 0.18), transparent 34%),
+    linear-gradient(135deg, #ffffff 0%, #f4f9ff 45%, #eaf4ff 100%);
+}
+
+.header-kicker {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 0.65rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: $primary;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.follows-header h1 {
+  margin: 0 0 0.35rem;
+  color: $text-dark;
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+}
+
+.follows-header p {
+  margin: 0;
+  color: $text-light;
+}
+
+.users-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 430px), 1fr));
+  gap: 1rem;
+}
+
+.user-card,
+.state-card {
+  background: #ffffff;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+}
+
+.user-card {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.user-card:hover {
+  border-color: $primary-light;
+  background-color: #f8fbff;
+}
+
+.user-avatar {
+  width: 68px;
+  height: 68px;
+  flex: 0 0 68px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #f3f4f6;
+}
+
+.user-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.user-initial {
+  width: 100%;
+  height: 100%;
+  background: $primary-light;
+  color: #ffffff;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.user-card-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-card-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.user-card h2 {
+  margin: 0;
+  color: $text-dark;
+  font-size: 1.08rem;
+  line-height: 1.25;
+}
+
+.user-card p {
+  margin: 0.25rem 0 0;
+  color: $text-light;
+  font-size: 0.92rem;
+}
+
+.user-rating {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 0.18rem;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.rating-star,
+.rating-value {
+  color: #f59e0b;
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+.rating-separator {
+  color: #94a3b8;
+  font-weight: 700;
+  margin: 0 0.08rem;
+}
+
+.rating-count {
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.86rem;
+}
+
+.user-rating--empty .rating-star {
+  color: #f59e0b;
+}
+
+.user-rating--empty .rating-count {
+  color: #64748b;
+}
+
+.user-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.user-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.08);
+  color: $primary-light;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.state-card {
+  padding: 1.5rem;
+  text-align: center;
+  color: $text-light;
+}
+
+@media (max-width: 767.98px) {
+  .follows-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1.5rem;
+  }
+
+  .follows-header .btn {
+    width: 100%;
+  }
+
+  .user-card-top {
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .user-rating {
+    justify-content: flex-start;
+  }
+}

@@ -1,0 +1,351 @@
+@use '../../../styles/variables' as *;
+
+.photographers-page {
+  min-height: calc(100vh - 72px);
+  background: #f8fafc;
+}
+
+.photographers-hero {
+  padding: 1.9rem 2.25rem;
+  border: 1px solid #cfe3ff;
+  border-radius: 24px;
+  background:
+    radial-gradient(circle at 88% 30%, rgba(13, 110, 253, 0.22), transparent 36%),
+    linear-gradient(135deg, #ffffff 0%, #f4f9ff 45%, #dbeafe 100%);
+}
+
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 0.75rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: #eff6ff;
+  color: $primary;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+}
+
+.photographers-hero h1 {
+  max-width: 760px;
+  margin: 1rem 0 1rem;
+  color: $text-dark;
+  line-height: 1.04;
+  letter-spacing: -0.04em;
+}
+
+.photographers-hero p {
+  max-width: 720px;
+  margin: 0;
+  color: $text-light;
+  font-size: 1.02rem;
+  line-height: 1.6;
+}
+
+.filters-card,
+.state-card,
+.photographer-card {
+  background: $background;
+  border: 1px solid $border;
+  border-radius: $radius-lg;
+}
+
+.filters-card,
+.state-card {
+  padding: 1.5rem;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 2fr) repeat(3, minmax(150px, 1fr));
+  gap: 1rem;
+  align-items: end;
+}
+
+.filter-field {
+  min-width: 0;
+}
+
+.filter-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.results-summary {
+  margin: 0 0 1rem;
+  color: #64748b;
+  font-weight: 700;
+}
+
+.photographers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 422px), 1fr));
+  gap: 1rem;
+}
+
+.photographer-card {
+  display: flex;
+  gap: 1rem;
+  min-height: 166px;
+  padding: 1rem;
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    border-color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.photographer-card:hover {
+  border-color: $primary-light;
+  background-color: #f8fbff;
+}
+
+.photographer-card__avatar {
+  width: 72px;
+  height: 72px;
+  flex: 0 0 72px;
+  border-radius: 999px;
+  overflow: hidden;
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.photographer-card__avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.photographer-card__initial {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: $primary-light;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  text-transform: uppercase;
+}
+
+.photographer-card__body {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.photographer-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+}
+
+.photographer-card__name {
+  font-weight: 800;
+  color: $text-dark;
+  line-height: 1.25;
+}
+
+.photographer-card__province {
+  margin-top: 0.25rem;
+  color: $text-light;
+  font-size: 0.95rem;
+}
+
+.photographer-card__rating {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.18rem;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.rating-star,
+.rating-value {
+  color: #f59e0b;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.rating-star {
+  font-size: 0.95rem;
+}
+
+.rating-value {
+  font-size: 0.95rem;
+}
+
+.rating-separator {
+  color: #94a3b8;
+  font-weight: 700;
+  margin: 0 0.08rem;
+  line-height: 1;
+}
+
+.rating-count {
+  color: #64748b;
+  font-weight: 700;
+  font-size: 0.86rem;
+  line-height: 1;
+}
+
+.photographer-card__rating--empty .rating-star {
+  color: #f59e0b;
+}
+
+.photographer-card__rating--empty .rating-count {
+  color: #64748b;
+}
+
+.photographer-card__description {
+  margin-top: 0.1rem;
+  font-size: 0.92rem;
+  color: $text-light;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.photographer-card__categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: auto;
+}
+
+.category-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.3rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(59, 130, 246, 0.08);
+  color: $primary-light;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.svg_icon_primary {
+  width: 16px;
+  height: 16px;
+  fill: $primary;
+}
+
+.state-card {
+  text-align: center;
+  color: $text-light;
+}
+
+.photographers-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.photographers-pagination__info {
+  color: #64748b;
+  font-weight: 700;
+}
+
+.photographers-pagination .btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 991.98px) {
+  .filters-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-field-search {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 767.98px) {
+  .photographers-hero {
+    padding: 1.5rem;
+  }
+
+  .photographers-hero h1 {
+    font-size: clamp(2rem, 9vw, 2.6rem);
+  }
+
+  .filters-card,
+  .state-card {
+    padding: 1rem;
+  }
+
+  .filters-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .filter-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .filter-actions .btn {
+    width: 100%;
+  }
+
+  .photographer-card {
+    min-height: auto;
+  }
+}
+
+@media (max-width: 520px) {
+  .photographer-card {
+    align-items: flex-start;
+  }
+
+  .photographer-card__avatar {
+    width: 58px;
+    height: 58px;
+    flex-basis: 58px;
+  }
+
+  .photographer-card__top {
+    flex-direction: column;
+    gap: 0.55rem;
+  }
+
+  .photographer-card__rating {
+    justify-content: flex-start;
+  }
+
+  .filter-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .photographers-pagination {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .photographers-pagination .btn {
+    width: 100%;
+  }
+
+  .photographers-pagination__info {
+    text-align: center;
+  }
+}

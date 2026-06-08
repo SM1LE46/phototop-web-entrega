@@ -1,0 +1,69 @@
+<section class="auth-shell">
+  <div class="container-fluid">
+    <div class="row justify-content-center align-items-center min-vh-auth">
+      <div class="col-12 col-sm-10 col-md-8 col-lg-5 col-xl-4">
+        <div class="auth-card">
+          <div class="auth-head text-center mb-4">
+            <span class="auth-eyebrow">Bienvenido a PhotoTop</span>
+            <h1 class="auth-title">Iniciar sesión</h1>
+            <p class="auth-description">
+              Accede a tu cuenta para gestionar tu perfil, tus mensajes y tus publicaciones.
+            </p>
+          </div>
+
+          <form (ngSubmit)="onSubmit()" #f="ngForm" novalidate>
+            <div class="mb-3">
+              <label for="email" class="form-label">Correo electrónico</label>
+              <input
+                id="email"
+                name="email"
+                type="email"
+                class="form-control auth-input"
+                [(ngModel)]="email"
+                required
+                email
+                placeholder="tuemail@ejemplo.com"
+                #emailModel="ngModel"
+              />
+              <div class="field-error mt-1" *ngIf="emailModel.invalid && emailModel.touched">
+                Introduce un email válido.
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Contraseña</label>
+              <input
+                id="password"
+                name="password"
+                type="password"
+                class="form-control auth-input"
+                [(ngModel)]="password"
+                required
+                placeholder="Tu contraseña"
+                #passwordModel="ngModel"
+              />
+              <div class="field-error mt-1" *ngIf="passwordModel.invalid && passwordModel.touched">
+                La contraseña es obligatoria.
+              </div>
+            </div>
+
+            <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-primary-custom" [disabled]="loading || f.invalid">
+                {{ loading ? 'Entrando...' : 'Iniciar sesión' }}
+              </button>
+            </div>
+
+            <div class="server-error mt-3" *ngIf="error">
+              {{ error }}
+            </div>
+          </form>
+
+          <div class="auth-foot mt-4 text-center">
+            <span>¿Todavía no tienes cuenta?</span>
+            <a routerLink="/auth/register">Crear cuenta</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

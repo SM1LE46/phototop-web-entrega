@@ -1,0 +1,222 @@
+<section class="public-profile-page">
+  <div class="container py-4" *ngIf="!loading; else loadingTpl">
+    <div class="profile-card" *ngIf="user">
+      <div class="profile-header">
+        <div class="profile-avatar">
+          <ng-container *ngIf="hasProfileImage(user.profile_image); else initialTpl">
+            <img [src]="getProfileImage(user.profile_image)" [alt]="user.name + ' ' + user.surname" />
+          </ng-container>
+
+          <ng-template #initialTpl>
+            <div class="profile-initial">
+              {{ getInitial(user.name) }}
+            </div>
+          </ng-template>
+        </div>
+
+        <div class="profile-main">
+          <div class="profile-info">
+
+            <div class="profile-title-row">
+              <h1>{{ user.name }} {{ user.surname }}</h1>
+
+              <div class="profile-meta">
+                <span *ngIf="user.province_name" class="profile-province">
+                  {{ user.province_name }}
+                </span>
+
+                <span class="profile-rating" [class.profile-rating--empty]="!user.avg_rating || user.avg_rating === 0">
+                  <ng-container *ngIf="user.avg_rating && user.avg_rating > 0; else noVotesTpl">
+                    <span class="rating-star">★</span>
+                    <span class="rating-value">{{ user.avg_rating }}</span>
+                    <span class="rating-separator">·</span>
+                    <span class="rating-count">
+                      {{ user.ratings_count || 0 }}
+                      {{ user.ratings_count === 1 ? 'voto' : 'votos' }}
+                    </span>
+                  </ng-container>
+
+                  <ng-template #noVotesTpl>
+                    <span class="rating-star">★</span>
+                    <span class="rating-count">Sin votos</span>
+                  </ng-template>
+                </span>
+              </div>
+            </div>
+            <div class="profile-actions" (click)="$event.stopPropagation()">
+
+              <button class="btn btn-primary-custom" type="button" [disabled]="followLoading" (click)="toggleFollow()">
+                {{ followLoading ? 'Guardando...' : (isFollowing ? 'Siguiendo' : 'Seguir') }}
+              </button>
+
+              <button class="btn btn-secondary-custom" type="button" (click)="openChat()">
+                Mensaje
+              </button>
+
+              <div class="profile-actions-menu-wrapper">
+                <button type="button" class="btn-icon-custom" aria-label="Más opciones" z
+                  (click)="toggleProfileActionsMenu($event)">
+                  ⋯
+                </button>
+
+                <div class="profile-actions-menu" *ngIf="showProfileActionsMenu">
+                  <button type="button" class="profile-actions-menu-item" (click)="openProfileReportModal($event)">
+                    Reportar perfil
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+
+          <div class="profile-stats">
+            <button class="profile-stat" type="button" (click)="scrollToPosts()">
+              <span class="profile-stat-number">{{ postsTotal || posts.length || 0 }}</span>
+              <span class="profile-stat-label">Publicaciones</span>
+            </button>
+
+            <a class="profile-stat" [routerLink]="['/users', user.id, 'followers']">
+              <span class="profile-stat-number">{{ user.followers_count || 0 }}</span>
+              <span class="profile-stat-label">Seguidores</span>
+            </a>
+
+            <a class="profile-stat" [routerLink]="['/users', user.id, 'following']">
+              <span class="profile-stat-number">{{ user.following_count || 0 }}</span>
+              <span class="profile-stat-label">Seguidos</span>
+            </a>
+          </div>
+
+          <p class="profile-description" *ngIf="user.description">
+            {{ user.description }}
+          </p>
+
+        </div>
+      </div>
+      <div class="profile-posts" id="profile-posts">
+        <div class="profile-categories" *ngIf="user.categories?.length">
+          <span class="category-chip" *ngFor="let category of user.categories">
+            <svg class="svg_icon_primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+              <path
+                d="M96.5 160L96.5 309.5C96.5 326.5 103.2 342.8 115.2 354.8L307.2 546.8C332.2 571.8 372.7 571.8 397.7 546.8L547.2 397.3C572.2 372.3 572.2 331.8 547.2 306.8L355.2 114.8C343.2 102.7 327 96 310 96L160.5 96C125.2 96 96.5 124.7 96.5 160zM208.5 176C226.2 176 240.5 190.3 240.5 208C240.5 225.7 226.2 240 208.5 240C190.8 240 176.5 225.7 176.5 208C176.5 190.3 190.8 176 208.5 176z" />
+            </svg>{{ category.name }}
+          </span>
+        </div>
+
+        <div class="posts-grid" *ngIf="posts.length > 0;">
+          <a class="post-card" *ngFor="let post of posts" [routerLink]="['/posts', post.id]">
+            <div class="post-card-image-wrap">
+              <img *ngIf="getPostCoverUrl(post)" [src]="getPostCoverUrl(post)" [alt]="post.title"
+                class="post-card-image" />
+
+              <div class="post-card-image post-card-image-placeholder" *ngIf="!getPostCoverUrl(post)">
+                Sin imagen
+              </div>
+
+              <span class="post-card-count" *ngIf="post.photos_count > 1">
+                {{ post.photos_count }} fotos
+              </span>
+            </div>
+
+            <div class="post-card-body">
+              <h3 class="post-card-title">{{ post.title }}</h3>
+
+              <div class="post-card-footer">
+                <p class="post-card-category" *ngIf="post.category_name">
+                  <svg class="svg_icon_primary" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640">
+                    <path
+                      d="M96.5 160L96.5 309.5C96.5 326.5 103.2 342.8 115.2 354.8L307.2 546.8C332.2 571.8 372.7 571.8 397.7 546.8L547.2 397.3C572.2 372.3 572.2 331.8 547.2 306.8L355.2 114.8C343.2 102.7 327 96 310 96L160.5 96C125.2 96 96.5 124.7 96.5 160zM208.5 176C226.2 176 240.5 190.3 240.5 208C240.5 225.7 226.2 240 208.5 240C190.8 240 176.5 225.7 176.5 208C176.5 190.3 190.8 176 208.5 176z" />
+                  </svg>
+                  {{ post.category_name }}
+                </p>
+
+                <div class="post-card-rating"
+                  [class.post-card-rating--empty]="getPostRatingLabel(post.avg_rating) === 'Sin votos'">
+                  <ng-container *ngIf="getPostRatingLabel(post.avg_rating) !== 'Sin votos'; else noVotesTpl">
+                    <span class="rating-star">★</span>
+                    <span class="rating-value">{{ getPostRatingLabel(post.avg_rating) }}</span>
+                    <span class="rating-separator">·</span>
+                    <span class="rating-count">
+                      {{ getPostRatingsCountLabel(post.ratings_count) }}
+                    </span>
+                  </ng-container>
+
+                  <ng-template #noVotesTpl>
+                    <span class="rating-star">★</span>
+                    <span class="rating-count">Sin votos</span>
+                  </ng-template>
+                </div>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="posts-pagination" *ngIf="!loadingPosts && postsTotalPages > 1">
+          <button type="button" class="btn btn-secondary-custom" (click)="prevPostsPage()"
+            [disabled]="postsPage <= 1 || loadingPosts">
+            Anterior
+          </button>
+
+          <span class="posts-pagination__info">
+            Página {{ postsPage }} de {{ postsTotalPages }}
+          </span>
+
+          <button type="button" class="btn btn-primary-custom" (click)="nextPostsPage()"
+            [disabled]="postsPage >= postsTotalPages || loadingPosts">
+            Siguiente
+          </button>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+  <ng-template #emptyTpl>
+    <div class="container py-4">
+      <div class="profile-card">
+        No se ha podido cargar el perfil.
+      </div>
+    </div>
+  </ng-template>
+
+  <ng-template #loadingTpl>
+    <div class="container py-4">
+      <div class="profile-card">
+        Cargando perfil...
+      </div>
+    </div>
+  </ng-template>
+
+  <div class="report-modal-backdrop" *ngIf="showReportModal">
+    <div class="report-modal">
+      <div class="report-modal__header">
+        <h3>Enviar reporte</h3>
+        <button type="button" (click)="closeReportModal()">×</button>
+      </div>
+
+      <div class="report-modal__body">
+        <label class="form-label">Motivo</label>
+        <select class="form-select mb-3" [(ngModel)]="reportReason">
+          <option value="">Selecciona un motivo</option>
+          <option value="Spam">Spam</option>
+          <option value="Contenido inapropiado">Contenido inapropiado</option>
+          <option value="Acoso">Acoso</option>
+          <option value="Otro">Otro</option>
+        </select>
+
+        <label class="form-label">Detalles</label>
+        <textarea class="form-control" rows="4" [(ngModel)]="reportDetails"
+          placeholder="Explica brevemente qué ocurre"></textarea>
+      </div>
+
+      <div class="report-modal__footer">
+        <button class="btn btn-secondary-custom" (click)="closeReportModal()">Cancelar</button>
+        <button class="btn btn-primary-custom"
+          [disabled]="sendingReport || !reportReason.trim() || !reportDetails.trim()" (click)="submitReport()">
+          {{ sendingReport ? 'Enviando...' : 'Enviar reporte' }}
+        </button>
+      </div>
+    </div>
+  </div>
+</section>

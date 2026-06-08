@@ -1,0 +1,113 @@
+<div class="admin-card admin-filters-card mb-4">
+  <div class="row g-3">
+    <div class="col-12 col-md-4">
+      <label class="form-label">Buscar</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="filters.q"
+        placeholder="Nombre, apellidos o email"
+      />
+    </div>
+
+    <div class="col-12 col-md-3">
+      <label class="form-label">Rol</label>
+      <select class="form-select" [(ngModel)]="filters.role">
+        <option value="">Todos</option>
+        <option value="admin">Admin</option>
+        <option value="photographer">Fotógrafo</option>
+        <option value="model">Modelo</option>
+        <option value="user">Usuario</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-3">
+      <label class="form-label">Estado</label>
+      <select class="form-select" [(ngModel)]="filters.status">
+        <option value="">Todos</option>
+        <option value="active">Activos</option>
+        <option value="deleted">Borrados</option>
+      </select>
+    </div>
+
+    <div class="col-12 col-md-2 d-flex align-items-end gap-2">
+      <button class="btn btn-primary-custom w-100" (click)="applyFilters()">
+        Filtrar
+      </button>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <button class="btn btn-secondary-custom" (click)="clearFilters()">
+      Limpiar filtros
+    </button>
+  </div>
+</div>
+
+<div class="admin-card" *ngIf="!loading; else loadingTpl">
+  <div class="table-responsive">
+    <table class="table admin-table align-middle mb-0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>Rol</th>
+          <th>Estado</th>
+          <th class="text-end">Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let user of users">
+          <td>{{ user.id }}</td>
+
+          <td>
+            <div class="user-name">{{ user.name }} {{ user.surname }}</div>
+          </td>
+
+          <td>{{ user.email }}</td>
+
+          <td>{{ getRoleLabel(user) }}</td>
+
+          <td>
+            <span class="status-badge" [class.status-badge--deleted]="isDeleted(user)">
+              {{ isDeleted(user) ? 'Borrado' : 'Activo' }}
+            </span>
+          </td>
+
+          <td class="text-end">
+            <ng-container *ngIf="!isDeleted(user); else restoreTpl">
+              <button
+                class="btn btn-secondary-custom btn-sm"
+                (click)="confirmDeleteUser(user)"
+              >
+                Borrar
+              </button>
+            </ng-container>
+
+            <ng-template #restoreTpl>
+              <button
+                class="btn btn-primary-custom btn-sm"
+                (click)="confirmRestoreUser(user)"
+              >
+                Restaurar
+              </button>
+            </ng-template>
+          </td>
+        </tr>
+
+        <tr *ngIf="users.length === 0">
+          <td colspan="6" class="text-center py-4 text-muted">
+            No hay usuarios para mostrar.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<ng-template #loadingTpl>
+  <div class="admin-card text-center py-5">
+    Cargando usuarios...
+  </div>
+</ng-template>
