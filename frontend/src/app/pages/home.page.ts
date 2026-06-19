@@ -4,10 +4,11 @@ import { RouterLink } from '@angular/router';
 import { AuthService } from '../core/services/auth.service';
 
 import { PostsService, PostListItem } from '../core/services/posts.service';
+import { PostDatePipe } from '../core/pipes/post-date.pipe';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PostDatePipe],
   templateUrl: './home.page.html',
   styleUrl: './home.page.scss',
 })

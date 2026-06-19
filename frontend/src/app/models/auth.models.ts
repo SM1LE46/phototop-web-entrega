@@ -10,7 +10,7 @@ export interface AuthRegisterRequest {
   surname: string;
   email: string;
   password: string;
-  province_id?: number | null;
+  province_id: number | null;
   description?: string | null;
   photographer: boolean;
   model: boolean;

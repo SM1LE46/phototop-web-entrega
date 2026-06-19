@@ -15,7 +15,7 @@ const router = express.Router();
  *  - surname: string
  *  - email: string
  *  - password: string
- *  - province_id: number opcional
+ *  - province_id: number
  *  - description: string opcional
  *  - photographer: boolean opcional
  *  - model: boolean opcional
@@ -37,25 +37,56 @@ router.post("/register", async (req, res) => {
       category_ids
     } = req.body || {};
 
-    if (!name || !surname || !email || !password) {
+    if (typeof name !== "string" || !name.trim()) {
       return res.status(400).json({
         ok: false,
-        message: "Missing fields: name, surname, email, password",
+        message: "Name is required",
       });
     }
 
-    if (!isValidEmail(email)) {
-      return res.status(400).json({ ok: false, message: "Invalid email" });
+    if (typeof surname !== "string" || !surname.trim()) {
+      return res.status(400).json({
+        ok: false,
+        message: "Surname is required",
+      });
     }
 
-    if (typeof password !== "string" || password.length < 6) {
+    if (typeof email !== "string" || !email.trim()) {
+      return res.status(400).json({
+        ok: false,
+        message: "Email is required",
+      });
+    }
+
+    if (province_id === undefined || province_id === null || province_id === "") {
+      return res.status(400).json({
+        ok: false,
+        message: "Province is required",
+      });
+    }
+
+    if (typeof password !== "string" || !password) {
+      return res.status(400).json({
+        ok: false,
+        message: "Password is required",
+      });
+    }
+
+    const normalizedEmail = email.trim().toLowerCase();
+
+    if (!isValidEmail(normalizedEmail)) {
+      return res.status(400).json({
+        ok: false,
+        message: "Invalid email",
+      });
+    }
+
+    if (password.length < 6) {
       return res.status(400).json({
         ok: false,
         message: "Password must be at least 6 characters",
       });
     }
-
-    const normalizedEmail = email.trim().toLowerCase();
 
     const [exists] = await pool.query(
       "SELECT id FROM users WHERE email = ? LIMIT 1",
@@ -66,27 +97,29 @@ router.post("/register", async (req, res) => {
       return res.status(409).json({ ok: false, message: "Email already in use" });
     }
 
-    const pid = province_id === null || province_id === undefined || province_id === ''
-      ? null
-      : Number(province_id);
+    const pid = Number(province_id);
 
-    if (province_id !== undefined && province_id !== null && province_id !== '' && !Number.isInteger(pid)) {
-      return res.status(400).json({ ok: false, message: "Invalid province_id" });
+    if (!Number.isInteger(pid)) {
+      return res.status(400).json({
+        ok: false,
+        message: "Invalid province_id",
+      });
     }
 
-    if (pid !== null) {
-      const [provRows] = await pool.query(
-        `SELECT id
-         FROM provinces
-         WHERE id = ?
-           AND active = 1
-         LIMIT 1`,
-        [pid]
-      );
+    const [provRows] = await pool.query(
+      `SELECT id
+        FROM provinces
+        WHERE id = ?
+          AND active = 1
+        LIMIT 1`,
+      [pid]
+    );
 
-      if (provRows.length === 0) {
-        return res.status(400).json({ ok: false, message: "Province not found" });
-      }
+    if (provRows.length === 0) {
+      return res.status(400).json({
+        ok: false,
+        message: "Province not found",
+      });
     }
 
     if (description !== undefined && description !== null && typeof description !== "string") {
@@ -228,7 +261,7 @@ router.post("/login", async (req, res) => {
     }
 
     const normalizedEmail = email.trim().toLowerCase();
-    
+
     const [rows] = await pool.query(
       `SELECT id, name, surname, email, password,
               admin, photographer, model, active, deleted_at

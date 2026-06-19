@@ -6,15 +6,15 @@
         <div class="card p-4">
 
             <div class="mb-3">
-                <label class="form-label">Título *</label>
+                <label class="form-label">Título <span class="required-mark">*</span></label>
                 <input class="form-control" [(ngModel)]="form.title" placeholder="Título del post" />
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Categoría</label>
+                <label class="form-label">Categoría <span class="required-mark">*</span></label>
 
-                <select class="form-select" [(ngModel)]="form.category_id">
-                    <option [ngValue]="null">Sin categoría</option>
+                <select class="form-select" [(ngModel)]="form.category_id" required>
+                    <option [ngValue]="null">Selecciona una categoría</option>
 
                     <option *ngFor="let category of categories" [ngValue]="category.id">
                         {{ category.name }}
@@ -32,23 +32,52 @@
             </div>
 
             <div class="mb-3">
-                <label class="form-label">Fotos *</label>
+                <label class="form-label">Fotos <span class="required-mark">*</span></label>
 
-                <input type="file" class="form-control" multiple accept="image/*" (change)="onFilesSelected($event)" />
+                <div class="custom-file-wrapper">
+
+                    <input #fileInput id="postPhotos" type="file" class="real-file-input" multiple
+                        accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+                        (change)="onFilesSelected($event)" />
+
+                    <label for="postPhotos" class="btn btn-primary-custom">
+                        Seleccionar fotos
+                    </label>
+
+                    <span class="custom-file-text">
+                        {{ selectedFiles.length > 0
+                        ? selectedFiles.length + ' foto' + (selectedFiles.length === 1 ? '' : 's') + ' seleccionada' +
+                        (selectedFiles.length === 1 ? '' : 's')
+                        : 'Ninguna foto seleccionada' }}
+                    </span>
+
+                </div>
 
                 <small class="text-muted">
-                    Puedes subir entre 1 y 10 fotos
+                    Puedes subir entre 1 y 10 fotos. Formatos permitidos: JPG, PNG o WEBP. Tamaño máximo: 8 MB por foto.
                 </small>
+
+                <div class="alert alert-danger mt-2" *ngIf="errorMessage">
+                    {{ errorMessage }}
+                </div>
             </div>
 
             <div class="photo-preview-grid" *ngIf="previews.length > 0">
 
                 <div class="photo-preview" *ngFor="let preview of previews; let i = index">
 
-                    <img [src]="preview">
+                    <span class="cover-badge" *ngIf="i === 0">
+                        Portada
+                    </span>
 
-                    <button type="button" class="remove-photo" (click)="removePhoto(i)">
+                    <img [src]="preview" alt="Vista previa de la foto">
+
+                    <button type="button" class="remove-photo" (click)="removePhoto(i, fileInput)">
                         ✕
+                    </button>
+
+                    <button type="button" class="cover-button" *ngIf="i !== 0" (click)="setAsCover(i)">
+                        Usar como portada
                     </button>
 
                 </div>
@@ -58,7 +87,7 @@
             <div class="mt-4">
 
                 <button class="btn btn-primary-custom" (click)="save()" [disabled]="saving">
-                    Crear publicación
+                    {{ saving ? 'Creando publicación...' : 'Crear publicación' }}
                 </button>
 
             </div>

@@ -3,8 +3,38 @@ const pool = require("../db");
 const auth = require("../middlewares/auth");
 const uploadPhotos = require("../middlewares/uploadPostPhotos");
 const fs = require("fs/promises");
+const multer = require("multer");
 
 const router = express.Router();
+
+function handlePostPhotoUpload(req, res, next) {
+  uploadPhotos.array("photos", 10)(req, res, (err) => {
+    if (!err) {
+      return next();
+    }
+
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        return res.status(400).json({
+          ok: false,
+          message: "One of the images is too large. Each photo must be at most 8 MB.",
+        });
+      }
+
+      if (err.code === "LIMIT_UNEXPECTED_FILE") {
+        return res.status(400).json({
+          ok: false,
+          message: "Too many photos selected. You can upload at most 10 images.",
+        });
+      }
+    }
+
+    return res.status(400).json({
+      ok: false,
+      message: err.message || "The selected images could not be processed.",
+    });
+  });
+}
 
 /**
  * POST /api/posts
@@ -13,21 +43,27 @@ const router = express.Router();
  * Body (form-data):
  *   - title: string (required)
  *   - description: string (optional)
- *   - category_id: number (optional)
+ *   - category_id: number (required)
  *   - photos: file[] (required, 1..10)
  * Crea un post y sube entre 1 y 10 fotos asociadas.
  * Response: { ok, message, data: { post_id, photos: string[] } }
  */
-router.post("/", auth, uploadPhotos.array("photos", 10), async (req, res) => {
+router.post("/", auth, handlePostPhotoUpload, async (req, res) => {
   try {
     const { title, description } = req.body || {};
-    const categoryId = req.body?.category_id ? Number(req.body.category_id) : null;
+    const rawCategoryId = req.body?.category_id;
 
     if (!title || typeof title !== "string" || !title.trim()) {
       return res.status(400).json({ ok: false, message: "Title is required" });
     }
 
-    if (req.body?.category_id && !Number.isInteger(categoryId)) {
+    if (rawCategoryId === undefined || rawCategoryId === null || String(rawCategoryId).trim() === "") {
+      return res.status(400).json({ ok: false, message: "Category is required" });
+    }
+
+    const categoryId = Number(rawCategoryId);
+
+    if (!Number.isInteger(categoryId) || categoryId <= 0) {
       return res.status(400).json({ ok: false, message: "Invalid category_id" });
     }
 
@@ -35,19 +71,18 @@ router.post("/", auth, uploadPhotos.array("photos", 10), async (req, res) => {
       return res.status(400).json({ ok: false, message: "At least one photo required" });
     }
 
-    if (categoryId !== null) {
-      const [catRows] = await pool.query(
-        `SELECT id
-         FROM categories
-         WHERE id = ?
-           AND active = 1
-           AND deleted_at IS NULL
-         LIMIT 1`,
-        [categoryId]
-      );
-      if (catRows.length === 0) {
-        return res.status(400).json({ ok: false, message: "Category not found" });
-      }
+    const [catRows] = await pool.query(
+      `SELECT id
+      FROM categories
+      WHERE id = ?
+        AND active = 1
+        AND deleted_at IS NULL
+      LIMIT 1`,
+      [categoryId]
+    );
+
+    if (catRows.length === 0) {
+      return res.status(400).json({ ok: false, message: "Category not found" });
     }
 
     const userId = req.user.id;
@@ -109,8 +144,8 @@ router.get("/", async (req, res) => {
 
     const categoryId =
       req.query.category_id !== undefined &&
-      req.query.category_id !== null &&
-      String(req.query.category_id).trim() !== ""
+        req.query.category_id !== null &&
+        String(req.query.category_id).trim() !== ""
         ? Number(req.query.category_id)
         : null;
 

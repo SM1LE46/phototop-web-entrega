@@ -41,9 +41,12 @@
       </div>
       <div class="posts-grid" *ngIf="!loading && posts.length > 0">
         <a class="post-card" *ngFor="let post of posts" [routerLink]="['/posts', post.id]">
-          <div class="post-cover">
-            <ng-container *ngIf="getPostCoverUrl(post); else noPhotoTpl">
-              <img [src]="getPostCoverUrl(post)" [alt]="post.title" />
+          <div class="post-cover photo-blur-cover">
+            <ng-container *ngIf="getPostCoverUrl(post) as coverUrl; else noPhotoTpl">
+              <div class="photo-blur-cover__bg" [style.background-image]="'url(' + coverUrl + ')'" aria-hidden="true">
+              </div>
+
+              <img class="photo-blur-cover__img" [src]="coverUrl" [alt]="post.title" />
             </ng-container>
 
             <ng-template #noPhotoTpl>
@@ -71,7 +74,7 @@
 
               <div>
                 <strong>{{ post.name }} {{ post.surname }}</strong>
-                <small>{{ post.created_at | date:'dd/MM/yyyy' }}</small>
+                <small>{{ post.created_at | postDate }}</small>
               </div>
             </div>
 
@@ -132,9 +135,6 @@
         Todavía no hay publicaciones.
       </div>
 
-      <div class="empty-state" *ngIf="!loading && posts.length === 0">
-        Todavía no hay publicaciones.
-      </div>
     </section>
   </div>
 </section>

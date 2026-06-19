@@ -29,7 +29,7 @@
             <ng-container *ngIf="step === 1">
               <div class="row">
                 <div class="col-12 col-md-6 mb-3">
-                  <label for="name" class="form-label">Nombre</label>
+                  <label for="name" class="form-label">Nombre<span class="required-mark">*</span></label>
                   <input
                     id="name"
                     name="name"
@@ -37,11 +37,12 @@
                     class="form-control auth-input"
                     [(ngModel)]="name"
                     placeholder="Tu nombre"
+                    required
                   />
                 </div>
 
                 <div class="col-12 col-md-6 mb-3">
-                  <label for="surname" class="form-label">Apellidos</label>
+                  <label for="surname" class="form-label">Apellidos<span class="required-mark">*</span></label>
                   <input
                     id="surname"
                     name="surname"
@@ -49,12 +50,13 @@
                     class="form-control auth-input"
                     [(ngModel)]="surname"
                     placeholder="Tus apellidos"
+                    required
                   />
                 </div>
               </div>
 
               <div class="mb-3">
-                <label for="email" class="form-label">Correo electrónico</label>
+                <label for="email" class="form-label">Correo electrónico<span class="required-mark">*</span></label>
                 <input
                   id="email"
                   name="email"
@@ -62,16 +64,18 @@
                   class="form-control auth-input"
                   [(ngModel)]="email"
                   placeholder="tuemail@ejemplo.com"
+                  required
                 />
               </div>
 
               <div class="mb-3">
-                <label for="province_id" class="form-label">Provincia</label>
+                <label for="province_id" class="form-label">Provincia<span class="required-mark">*</span></label>
                 <select
                   id="province_id"
                   name="province_id"
                   class="form-select auth-input"
                   [(ngModel)]="province_id"
+                  required
                 >
                   <option [ngValue]="null">Selecciona una provincia</option>
                   <option *ngFor="let province of provinces" [ngValue]="province.id">
@@ -120,7 +124,7 @@
               </div>
 
               <div class="mb-3">
-                <label for="password" class="form-label">Contraseña</label>
+                <label for="password" class="form-label">Contraseña<span class="required-mark">*</span></label>
                 <input
                   id="password"
                   name="password"
@@ -128,12 +132,13 @@
                   class="form-control auth-input"
                   [(ngModel)]="password"
                   placeholder="Mínimo 6 caracteres"
+                  required
                 />
                 <div class="field-hint mt-1">La contraseña debe tener al menos 6 caracteres.</div>
               </div>
 
               <div class="mb-3">
-                <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
+                <label for="confirmPassword" class="form-label">Confirmar contraseña<span class="required-mark">*</span></label>
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
@@ -141,6 +146,7 @@
                   class="form-control auth-input"
                   [(ngModel)]="confirmPassword"
                   placeholder="Repite la contraseña"
+                  required
                 />
               </div>
 

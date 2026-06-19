@@ -6,10 +6,11 @@ import { PostsService } from '../../core/services/posts.service';
 import { AuthService } from '../../core/services/auth.service';
 import { ReportsService, ReportTargetType } from '../../core/services/reports.service';
 import { FormsModule } from '@angular/forms';
+import { PostDatePipe } from '../../core/pipes/post-date.pipe';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterLink, FormsModule],
+  imports: [CommonModule, RouterLink, FormsModule, PostDatePipe],
   templateUrl: './public-profile.page.html',
   styleUrls: ['./public-profile.page.scss'],
 })
@@ -52,7 +53,20 @@ export class PublicProfilePage implements OnInit {
 
   ngOnInit(): void {
     this.userId = Number(this.route.snapshot.paramMap.get('id'));
+
+    if (this.isOwnProfile(this.userId)) {
+      this.router.navigateByUrl('/profile');
+      return;
+    }
+
     this.loadUser();
+  }
+
+  private isOwnProfile(userId: number | string | null | undefined): boolean {
+    const currentUserId = Number(this.auth.user?.id);
+    const selectedUserId = Number(userId);
+
+    return !!currentUserId && !!selectedUserId && currentUserId === selectedUserId;
   }
 
   loadUser(): void {
@@ -65,6 +79,11 @@ export class PublicProfilePage implements OnInit {
 
     this.usersService.getPublicUser(this.userId).subscribe({
       next: (user) => {
+        if (this.isOwnProfile(user?.id)) {
+          this.router.navigateByUrl('/profile');
+          return;
+        }
+
         this.user = user;
         this.loadFollowStatus();
         this.loadUserPosts(1);

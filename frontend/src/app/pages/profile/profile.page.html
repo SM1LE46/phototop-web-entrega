@@ -111,13 +111,21 @@
 
           <div class="posts-grid" *ngIf="posts.length > 0; else emptyPostsTpl">
             <a class="post-card" *ngFor="let post of posts" [routerLink]="['/posts', post.id]">
-              <div class="post-card-image-wrap">
-                <img *ngIf="getPostCoverUrl(post)" [src]="getPostCoverUrl(post)" [alt]="post.title"
-                  class="post-card-image" />
 
-                <div class="post-card-image post-card-image-placeholder" *ngIf="!getPostCoverUrl(post)">
-                  Sin imagen
-                </div>
+              <div class="post-card-image-wrap photo-blur-cover">
+                <ng-container *ngIf="getPostCoverUrl(post) as coverUrl; else noProfilePostImageTpl">
+                  <div class="photo-blur-cover__bg" [style.background-image]="'url(' + coverUrl + ')'"
+                    aria-hidden="true">
+                  </div>
+
+                  <img class="post-card-image photo-blur-cover__img" [src]="coverUrl" [alt]="post.title" />
+                </ng-container>
+
+                <ng-template #noProfilePostImageTpl>
+                  <div class="post-card-image post-card-image-placeholder">
+                    Sin imagen
+                  </div>
+                </ng-template>
 
                 <span class="post-card-count" *ngIf="post.photos_count > 1">
                   {{ post.photos_count }} fotos
@@ -126,6 +134,10 @@
 
               <div class="post-card-body">
                 <h3 class="post-card-title">{{ post.title }}</h3>
+
+                <p class="post-card-date" *ngIf="post.created_at">
+                  {{ post.created_at | postDate }}
+                </p>
 
                 <div class="post-card-footer">
                   <p class="post-card-category" *ngIf="post.category_name">

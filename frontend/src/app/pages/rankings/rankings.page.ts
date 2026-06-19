@@ -1,7 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
+
 
 import {
   PhotographerRankingRow,
@@ -11,13 +12,14 @@ import {
 
 import { ProvincesService } from '../../core/services/provinces.service';
 import { CategoriesService } from '../../core/services/categories.service';
+import { AuthService } from '../../core/services/auth.service';
 
 import { Province } from '../../models/province.model';
 import { Category } from '../../models/category.model';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule],
   templateUrl: './rankings.page.html',
   styleUrl: './rankings.page.scss',
 })
@@ -63,7 +65,9 @@ export class RankingsPage implements OnInit {
   constructor(
     private rankingsService: RankingsService,
     private provincesService: ProvincesService,
-    private categoriesService: CategoriesService
+    private categoriesService: CategoriesService,
+    private router: Router,
+    private auth: AuthService
   ) { }
 
   ngOnInit(): void {
@@ -242,5 +246,17 @@ export class RankingsPage implements OnInit {
     if (position === 2) return '/medalla-plata-transparente.png';
     if (position === 3) return '/medalla-bronce-transparente.png';
     return null;
+  }
+
+  openPhotographerProfile(photographerId: number): void {
+    const currentUserId = Number(this.auth.user?.id);
+    const selectedUserId = Number(photographerId);
+
+    if (currentUserId && currentUserId === selectedUserId) {
+      this.router.navigateByUrl('/profile');
+      return;
+    }
+
+    this.router.navigate(['/users', selectedUserId]);
   }
 }

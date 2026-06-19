@@ -148,9 +148,9 @@
             </div>
           </div>
 
-          <a class="btn btn-primary-custom" [routerLink]="['/users', photographer.id]">
+          <button type="button" class="btn btn-primary-custom" (click)="openPhotographerProfile(photographer.id)">
             Ver perfil
-          </a>
+          </button>
         </article>
       </div>
       <div class="rankings-pagination" *ngIf="!loading && rankingTotalPages > 1">

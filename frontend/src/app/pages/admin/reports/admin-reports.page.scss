@@ -1,27 +1,5 @@
 @use '../../../../styles/variables' as *;
 
-.admin-tabs {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.admin-tabs a {
-  text-decoration: none;
-  padding: 0.6rem 1rem;
-  border-radius: 10px;
-  background: $background;
-  color: $text-dark;
-  font-weight: 600;
-  border: 1px solid $border;
-}
-
-.admin-tabs a.active {
-  background: $primary-light;
-  color: white;
-  border-color: $primary-light;
-}
-
 .admin-card {
   background: $background;
   border: 1px solid $border;

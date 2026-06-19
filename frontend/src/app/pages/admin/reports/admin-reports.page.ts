@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { RouterLink, RouterLinkActive } from '@angular/router';
 
 import {
     AdminReportRow,
@@ -10,7 +9,7 @@ import {
 
 @Component({
     standalone: true,
-    imports: [CommonModule, FormsModule, RouterLink, RouterLinkActive],
+    imports: [CommonModule, FormsModule,],
     templateUrl: './admin-reports.page.html',
     styleUrls: ['./admin-reports.page.scss'],
 })

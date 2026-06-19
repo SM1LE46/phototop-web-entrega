@@ -1,6 +1,6 @@
 <section class="public-profile-page">
   <div class="container py-4" *ngIf="!loading; else loadingTpl">
-    <div class="profile-card" *ngIf="user">
+    <div class="profile-card" *ngIf="user; else emptyTpl">
       <div class="profile-header">
         <div class="profile-avatar">
           <ng-container *ngIf="hasProfileImage(user.profile_image); else initialTpl">
@@ -26,7 +26,7 @@
                 </span>
 
                 <span class="profile-rating" [class.profile-rating--empty]="!user.avg_rating || user.avg_rating === 0">
-                  <ng-container *ngIf="user.avg_rating && user.avg_rating > 0; else noVotesTpl">
+                  <ng-container *ngIf="user.avg_rating && user.avg_rating > 0; else noProfileVotesTpl">
                     <span class="rating-star">★</span>
                     <span class="rating-value">{{ user.avg_rating }}</span>
                     <span class="rating-separator">·</span>
@@ -36,7 +36,7 @@
                     </span>
                   </ng-container>
 
-                  <ng-template #noVotesTpl>
+                  <ng-template #noProfileVotesTpl>
                     <span class="rating-star">★</span>
                     <span class="rating-count">Sin votos</span>
                   </ng-template>
@@ -54,7 +54,7 @@
               </button>
 
               <div class="profile-actions-menu-wrapper">
-                <button type="button" class="btn-icon-custom" aria-label="Más opciones" z
+                <button type="button" class="btn-icon-custom" aria-label="Más opciones"
                   (click)="toggleProfileActionsMenu($event)">
                   ⋯
                 </button>
@@ -103,23 +103,33 @@
           </span>
         </div>
 
-        <div class="posts-grid" *ngIf="posts.length > 0;">
+        <div class="posts-grid" *ngIf="posts.length > 0">
           <a class="post-card" *ngFor="let post of posts" [routerLink]="['/posts', post.id]">
-            <div class="post-card-image-wrap">
-              <img *ngIf="getPostCoverUrl(post)" [src]="getPostCoverUrl(post)" [alt]="post.title"
-                class="post-card-image" />
 
-              <div class="post-card-image post-card-image-placeholder" *ngIf="!getPostCoverUrl(post)">
-                Sin imagen
-              </div>
+            <div class="post-card-image-wrap photo-blur-cover">
+              <ng-container *ngIf="getPostCoverUrl(post) as coverUrl; else noPublicPostImageTpl">
+                <div class="photo-blur-cover__bg" [style.background-image]="'url(' + coverUrl + ')'" aria-hidden="true">
+                </div>
+
+                <img class="post-card-image photo-blur-cover__img" [src]="coverUrl" [alt]="post.title" />
+              </ng-container>
+
+              <ng-template #noPublicPostImageTpl>
+                <div class="post-card-image post-card-image-placeholder">
+                  Sin imagen
+                </div>
+              </ng-template>
 
               <span class="post-card-count" *ngIf="post.photos_count > 1">
                 {{ post.photos_count }} fotos
               </span>
             </div>
-
             <div class="post-card-body">
               <h3 class="post-card-title">{{ post.title }}</h3>
+
+              <p class="post-card-date" *ngIf="post.created_at">
+                {{ post.created_at | postDate }}
+              </p>
 
               <div class="post-card-footer">
                 <p class="post-card-category" *ngIf="post.category_name">
@@ -132,7 +142,7 @@
 
                 <div class="post-card-rating"
                   [class.post-card-rating--empty]="getPostRatingLabel(post.avg_rating) === 'Sin votos'">
-                  <ng-container *ngIf="getPostRatingLabel(post.avg_rating) !== 'Sin votos'; else noVotesTpl">
+                  <ng-container *ngIf="getPostRatingLabel(post.avg_rating) !== 'Sin votos'; else noPostVotesTpl">
                     <span class="rating-star">★</span>
                     <span class="rating-value">{{ getPostRatingLabel(post.avg_rating) }}</span>
                     <span class="rating-separator">·</span>
@@ -141,7 +151,7 @@
                     </span>
                   </ng-container>
 
-                  <ng-template #noVotesTpl>
+                  <ng-template #noPostVotesTpl>
                     <span class="rating-star">★</span>
                     <span class="rating-count">Sin votos</span>
                   </ng-template>
@@ -173,10 +183,8 @@
   </div>
 
   <ng-template #emptyTpl>
-    <div class="container py-4">
-      <div class="profile-card">
-        No se ha podido cargar el perfil.
-      </div>
+    <div class="profile-card">
+      No se ha podido cargar el perfil.
     </div>
   </ng-template>
 
@@ -218,5 +226,9 @@
         </button>
       </div>
     </div>
+  </div>
+
+  <div class="floating-toast" *ngIf="toastVisible">
+    {{ toastMessage }}
   </div>
 </section>

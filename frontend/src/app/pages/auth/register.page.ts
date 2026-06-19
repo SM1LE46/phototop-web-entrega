@@ -44,7 +44,7 @@ export class RegisterPage implements OnInit {
     private router: Router,
     private provincesService: ProvincesService,
     private categoriesService: CategoriesService
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.loadProvinces();
@@ -103,16 +103,6 @@ export class RegisterPage implements OnInit {
     }
   }
 
-  canGoToStep2(): boolean {
-    if (!this.name.trim()) return false;
-    if (!this.surname.trim()) return false;
-    if (!this.email.trim()) return false;
-    if (this.password.length < 6) return false;
-    if (!this.passwordsMatch()) return false;
-    if (!this.photographer) return false;
-    return true;
-  }
-
   goNext(): void {
     this.error = null;
 
@@ -127,7 +117,12 @@ export class RegisterPage implements OnInit {
     }
 
     if (!this.email.trim()) {
-      this.error = 'El email es obligatorio.';
+      this.error = 'El correo electrónico es obligatorio.';
+      return;
+    }
+
+    if (!this.province_id) {
+      this.error = 'La provincia es obligatoria.';
       return;
     }
 
@@ -175,9 +170,57 @@ export class RegisterPage implements OnInit {
       },
       error: (e) => {
         this.loading = false;
-        this.error = e?.error?.message || e?.message || 'Error de registro';
+        this.error = this.translateRegisterError(e?.error?.message);
       },
     });
+  }
+
+  private translateRegisterError(message?: string): string {
+    switch (message) {
+      case 'Name is required':
+        return 'El nombre es obligatorio.';
+
+      case 'Surname is required':
+        return 'Los apellidos son obligatorios.';
+
+      case 'Email is required':
+        return 'El correo electrónico es obligatorio.';
+
+      case 'Province is required':
+        return 'La provincia es obligatoria.';
+
+      case 'Password is required':
+        return 'La contraseña es obligatoria.';
+
+      case 'Invalid email':
+        return 'El correo electrónico no tiene un formato válido.';
+
+      case 'Password must be at least 6 characters':
+        return 'La contraseña debe tener al menos 6 caracteres.';
+
+      case 'Email already in use':
+        return 'El correo electrónico ya está en uso.';
+
+      case 'Invalid province_id':
+        return 'La provincia seleccionada no es válida.';
+
+      case 'Province not found':
+        return 'La provincia seleccionada no existe o no está disponible.';
+
+      case 'category_ids must be an array':
+      case 'category_ids must contain only integers':
+      case 'Some categories do not exist or are inactive':
+        return 'Alguna de las categorías seleccionadas no es válida.';
+
+      case 'Only photographers can select categories':
+        return 'Solo los fotógrafos pueden seleccionar categorías.';
+
+      case 'Server error':
+        return 'Error interno del servidor. Inténtalo de nuevo más tarde.';
+
+      default:
+        return 'No se ha podido crear la cuenta. Revisa los datos e inténtalo de nuevo.';
+    }
   }
 
   finishRegister(): void {

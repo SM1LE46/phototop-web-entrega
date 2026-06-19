@@ -222,11 +222,6 @@
 
   .posts-grid {
     display: grid;
-    //6 POST POR FILA
-    // grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    //4 POST POR FILA
-    // grid-template-columns: repeat(auto-fill, minmax(237px, 1fr));
-    //6 POST POR FILA
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 1rem;
   }
@@ -257,10 +252,6 @@
     display: block;
   }
 
-  .post-card-image {
-    object-fit: cover;
-  }
-
   .post-card-image-placeholder {
     display: flex;
     align-items: center;
@@ -269,10 +260,17 @@
     color: $text-light;
   }
 
+  .post-card-image {
+    object-fit: contain;
+    position: relative;
+    z-index: 1;
+  }
+
   .post-card-count {
     position: absolute;
     top: 0.75rem;
     right: 0.75rem;
+    z-index: 2;
     background: rgba(17, 24, 39, 0.75);
     color: #ffffff;
     border-radius: 999px;
@@ -290,6 +288,13 @@
     color: $text-dark;
     font-size: 1rem;
     font-weight: 700;
+  }
+
+  .post-card-date {
+    margin: 0 0 0.55rem;
+    color: #64748b;
+    font-size: 0.85rem;
+    font-weight: 500;
   }
 
   .profile-info {

@@ -1,9 +1,6 @@
 <section class="categories-page">
   <div class="container py-4">
-    <section
-      class="categories-hero"
-      [style.background-image]="getHeroBackground()"
-    >
+    <section class="categories-hero" [style.background-image]="getHeroBackground()">
       <div class="hero-overlay">
         <div class="hero-content">
           <p class="hero-kicker">
@@ -26,27 +23,17 @@
           </p>
 
           <div class="hero-actions">
-            <a
-              routerLink="/photographers"
+            <a routerLink="/photographers"
               [queryParams]="selectedCategory ? { category_ids: selectedCategory.id, type: 'photographer' } : { type: 'photographer' }"
-              class="btn btn-primary-custom"
-            >
+              class="btn btn-primary-custom">
               {{ selectedCategory ? 'Fotógrafos de ' + selectedCategory.name : 'Buscar fotógrafos' }}
             </a>
 
-            <a
-              *ngIf="selectedCategory"
-              routerLink="/categories"
-              class="btn btn-secondary-custom"
-            >
+            <a *ngIf="selectedCategory" routerLink="/categories" class="btn btn-secondary-custom">
               Ver todas las categorías
             </a>
 
-            <a
-              *ngIf="!selectedCategory"
-              routerLink="/"
-              class="btn btn-secondary-custom"
-            >
+            <a *ngIf="!selectedCategory" routerLink="/" class="btn btn-secondary-custom">
               Ver publicaciones
             </a>
           </div>
@@ -63,15 +50,9 @@
       </div>
 
       <div class="categories-grid">
-        <article
-          class="category-card"
-          *ngFor="let category of categories"
-        >
+        <article class="category-card" *ngFor="let category of categories">
           <div class="category-image">
-            <img
-              [src]="category.image"
-              [alt]="category.name"
-            />
+            <img [src]="category.image" [alt]="category.name" />
 
             <div class="category-overlay"></div>
 
@@ -88,18 +69,12 @@
             </p>
 
             <div class="category-actions">
-              <a
-                class="btn btn-primary-custom"
-                routerLink="/photographers"
-                [queryParams]="{ category_ids: category.id, type: 'photographer' }"
-              >
+              <a class="btn btn-primary-custom" routerLink="/photographers"
+                [queryParams]="{ category_ids: category.id, type: 'photographer' }">
                 Fotógrafos
               </a>
 
-              <a
-                class="btn btn-secondary-custom"
-                [routerLink]="['/categories', category.slug]"
-              >
+              <a class="btn btn-secondary-custom" [routerLink]="['/categories', category.slug]">
                 Posts
               </a>
             </div>
@@ -123,17 +98,14 @@
       </div>
 
       <div class="posts-grid" *ngIf="!loadingPosts && posts.length > 0">
-        <a
-          class="post-card"
-          *ngFor="let post of posts"
-          [routerLink]="['/posts', post.id]"
-        >
-          <div class="post-cover">
-            <ng-container *ngIf="getPostCoverUrl(post); else noPhotoTpl">
-              <img
-                [src]="getPostCoverUrl(post)"
-                [alt]="post.title"
-              />
+        <a class="post-card" *ngFor="let post of posts" [routerLink]="['/posts', post.id]">
+
+          <div class="post-cover photo-blur-cover">
+            <ng-container *ngIf="getPostCoverUrl(post) as coverUrl; else noPhotoTpl">
+              <div class="photo-blur-cover__bg" [style.background-image]="'url(' + coverUrl + ')'" aria-hidden="true">
+              </div>
+
+              <img class="photo-blur-cover__img" [src]="coverUrl" [alt]="post.title" />
             </ng-container>
 
             <ng-template #noPhotoTpl>
@@ -151,10 +123,7 @@
             <div class="post-author">
               <div class="author-avatar">
                 <ng-container *ngIf="hasProfileImage(post.profile_image); else initialTpl">
-                  <img
-                    [src]="getProfileImage(post.profile_image)"
-                    [alt]="post.name + ' ' + post.surname"
-                  />
+                  <img [src]="getProfileImage(post.profile_image)" [alt]="post.name + ' ' + post.surname" />
                 </ng-container>
 
                 <ng-template #initialTpl>
@@ -164,7 +133,7 @@
 
               <div>
                 <strong>{{ post.name }} {{ post.surname }}</strong>
-                <small>{{ post.created_at | date:'dd/MM/yyyy' }}</small>
+                <small>{{ post.created_at | postDate }}</small>
               </div>
             </div>
 
@@ -179,11 +148,8 @@
                 {{ post.category_name || selectedCategory.name }}
               </span>
 
-              <span
-                class="rating-summary"
-                [class.no-votes]="toNumber(post.ratings_count) === 0"
-                title="Valoración media y número de votos"
-              >
+              <span class="rating-summary" [class.no-votes]="toNumber(post.ratings_count) === 0"
+                title="Valoración media y número de votos">
                 <ng-container *ngIf="toNumber(post.ratings_count) > 0; else noVotesTpl">
                   <span class="rating-star">★</span>
                   <span class="rating-value">{{ toNumber(post.avg_rating).toFixed(1) }}</span>
@@ -205,12 +171,8 @@
       </div>
 
       <div class="posts-pagination" *ngIf="!loadingPosts && postsTotalPages > 1">
-        <button
-          type="button"
-          class="btn btn-secondary-custom"
-          (click)="prevPostsPage()"
-          [disabled]="postsPage <= 1 || loadingPosts"
-        >
+        <button type="button" class="btn btn-secondary-custom" (click)="prevPostsPage()"
+          [disabled]="postsPage <= 1 || loadingPosts">
           Anterior
         </button>
 
@@ -218,12 +180,8 @@
           Página {{ postsPage }} de {{ postsTotalPages }}
         </span>
 
-        <button
-          type="button"
-          class="btn btn-primary-custom"
-          (click)="nextPostsPage()"
-          [disabled]="postsPage >= postsTotalPages || loadingPosts"
-        >
+        <button type="button" class="btn btn-primary-custom" (click)="nextPostsPage()"
+          [disabled]="postsPage >= postsTotalPages || loadingPosts">
           Siguiente
         </button>
       </div>

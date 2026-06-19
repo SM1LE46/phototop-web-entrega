@@ -181,7 +181,6 @@ router.get("/users/:id", auth, admin, async (req, res) => {
     const reports_closed = Number(repStatsRows[0]?.reports_closed) || 0;
 
     // Rating medio del autor: media de ratings de sus posts (solo posts activos/no borrados, ratings activos/no borrados)
-    // Nota: ajusta nombres si tu tabla ratings se llama distinto.
     const [ratingRows] = await pool.query(
       `
       SELECT ROUND(AVG(r.rating), 1) AS avg_rating_as_author
@@ -1694,7 +1693,7 @@ router.post("/categories", auth, admin, async (req, res) => {
     }
 
     // Si existe una categoría con ese slug, no dejamos duplicar.
-    // Si está borrada, obligamos a usar restore (más limpio).
+    // Si la categoría está eliminada, se debe restaurar antes de reutilizarla.
     const [exists] = await pool.query(
       `SELECT id, deleted_at FROM categories WHERE slug = ? LIMIT 1`,
       [slug]

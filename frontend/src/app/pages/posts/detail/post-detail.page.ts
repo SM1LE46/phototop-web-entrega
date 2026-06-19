@@ -1,16 +1,17 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HostListener } from '@angular/core';
 
 import { PostsService } from '../../../core/services/posts.service';
 import { AuthService } from '../../../core/services/auth.service';
 import { ReportsService, ReportTargetType } from '../../../core/services/reports.service';
+import { PostDatePipe } from '../../../core/pipes/post-date.pipe';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, PostDatePipe],
   templateUrl: './post-detail.page.html',
   styleUrl: './post-detail.page.scss',
 })
@@ -20,6 +21,7 @@ export class PostDetailPage implements OnInit {
 
   post: any = null;
   currentPhotoIndex = 0;
+  showImageModal = false;
 
   commentText = '';
   sendingComment = false;
@@ -437,6 +439,18 @@ export class PostDetailPage implements OnInit {
         this.sendingReport = false;
       }
     });
+  }
+
+  openImageModal(): void {
+    if (!this.currentPhotoUrl) {
+      return;
+    }
+
+    this.showImageModal = true;
+  }
+
+  closeImageModal(): void {
+    this.showImageModal = false;
   }
 }
 

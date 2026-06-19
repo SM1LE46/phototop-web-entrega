@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 
 import { PostsService, PostListItem } from '../../core/services/posts.service';
+import { PostDatePipe } from '../../core/pipes/post-date.pipe';
 
 interface CategoryCard {
   id: number;
@@ -14,7 +15,7 @@ interface CategoryCard {
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PostDatePipe],
   templateUrl: './categories.page.html',
   styleUrl: './categories.page.scss',
 })

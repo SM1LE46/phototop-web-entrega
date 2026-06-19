@@ -7,10 +7,11 @@ import { UsersService, UserProfile } from '../../core/services/users.service';
 import { PostsService } from '../../core/services/posts.service';
 import { CategoriesService } from '../../core/services/categories.service';
 import { Category } from '../../models/category.model';
+import { PostDatePipe } from '../../core/pipes/post-date.pipe';
 
 @Component({
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, PostDatePipe],
   templateUrl: './profile.page.html',
   styleUrl: './profile.page.scss',
 })

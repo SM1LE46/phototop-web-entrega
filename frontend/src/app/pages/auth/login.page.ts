@@ -22,12 +22,35 @@ export class LoginPage implements OnInit {
     private auth: AuthService,
     private router: Router,
     private route: ActivatedRoute
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     this.returnUrl = this.route.snapshot.queryParamMap.get('returnUrl') || '/profile';
   }
 
+
+  private translateLoginError(message?: string): string {
+    switch (message) {
+      case 'Missing fields: email, password':
+        return 'El correo electrónico y la contraseña son obligatorios.';
+
+      case 'Invalid email':
+        return 'El correo electrónico no tiene un formato válido.';
+
+      case 'Invalid credentials':
+        return 'El correo electrónico o la contraseña no son correctos.';
+
+      case 'Account disabled':
+        return 'Esta cuenta está desactivada.';
+
+      case 'Server error':
+        return 'Error interno del servidor. Inténtalo de nuevo más tarde.';
+
+      default:
+        return 'No se ha podido iniciar sesión. Revisa los datos e inténtalo de nuevo.';
+    }
+  }
+  
   onSubmit(): void {
     if (this.loading) return;
 
@@ -52,7 +75,7 @@ export class LoginPage implements OnInit {
       },
       error: (e) => {
         this.loading = false;
-        this.error = e?.error?.message || e?.message || 'Error de login';
+        this.error = this.translateLoginError(e?.error?.message);
       },
     });
   }
